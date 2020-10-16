@@ -19,10 +19,14 @@ public class Ball extends Sprite {
 
     public Ball(Vector2 pos, Texture texture, COLOR color){
         super(texture);
+
+        float ballWidth = Gdx.graphics.getWidth()*0.06f;
+
+        super.setSize(ballWidth,ballWidth);
         super.setPosition(pos.x,pos.y);
 
         position = pos;
-        circle = new Circle(pos.x,pos.y,texture.getHeight()/2);
+        circle = new Circle(pos.x + ballWidth/2,pos.y + ballWidth/2,texture.getWidth()/2);
 
         this.color = color;
 
@@ -42,6 +46,6 @@ public class Ball extends Sprite {
     public void mover(){
         position.add(direction);
         super.setPosition(position.x ,position.y );
-        circle.setPosition(new Vector2(position.x ,position.y ));
+        circle.setPosition(new Vector2(position.x  + super.getWidth()/2,position.y  + super.getHeight()/2));
     }
 }

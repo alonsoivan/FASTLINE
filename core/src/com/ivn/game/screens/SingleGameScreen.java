@@ -130,7 +130,7 @@ public class SingleGameScreen implements Screen {
     }
 
     public void draw(){
-        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
@@ -146,23 +146,25 @@ public class SingleGameScreen implements Screen {
         // Colisiones
         for(Ball ball : balls)
             if(Intersector.overlaps(midBall.circle,ball.circle)) {
-                if(sameColor(ball.position,ball.direction, ball.color))
+                if(sameColor(ball))
                     midBall.score += 5;
                 else
-                    System.exit(0);
+                    //System.exit(0);
+                    System.out.println("perdiste wey");
+
 
                 balls.removeValue(ball,false);
             }
     }
 
-    public boolean sameColor(Vector2 pos, Vector2 dir, Ball.COLOR ballColor){
+    public boolean sameColor(Ball ball){
         // color de pixel de la pantalla
 
-        pos = new Vector2(pos.x + 64, pos.y + 64);
+        ball.position = new Vector2(ball.position.x + 64, ball.position.y + 64);
         for(int i = 0; i < 15 ; i++)
-            pos.add(dir);
+            ball.position.add(ball.direction);
 
-        int pixel = ScreenUtils.getFrameBufferPixmap(0,0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()).getPixel(MathUtils.round(pos.x),MathUtils.round(pos.y));
+        int pixel = ScreenUtils.getFrameBufferPixmap(0,0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()).getPixel(MathUtils.round(ball.position.x),MathUtils.round(ball.position.y));
         Color midBallColor = new Color(pixel);
 
         System.out.println(midBallColor.r + " " + midBallColor.b + " " + midBallColor.g);
@@ -175,22 +177,22 @@ public class SingleGameScreen implements Screen {
 
         if(r == 1 && g == 0 && b == 0) {
             col = "rojo";
-            if (ballColor == RED)
+            if (ball.color == RED)
                 return true;
         }
         else if(r == 0 && g == 1 && b == 1) {
             col = "azul";
-            if (ballColor == BLUE)
+            if (ball.color == BLUE)
                 return true;
         }
         else if(r == 1 && g == 1 && b == 0) {
             col = "amarillo";
-            if (ballColor == YELLOW)
+            if (ball.color == YELLOW)
                 return true;
         }
         else if(r == 0 && g == 1 && b == 0) {
             col = "verde";
-            if (ballColor == GREEN)
+            if (ball.color == GREEN)
                 return true;
         }
 

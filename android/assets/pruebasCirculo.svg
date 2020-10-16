@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg8"
+   inkscape:export-filename="C:\Users\nervi\bitmap.png"
+   inkscape:export-xdpi="111.38686"
+   inkscape:export-ydpi="111.38686"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   sodipodi:docname="pruebasCirculo.svg">
+  <defs
+     id="defs2">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="-1.4138148e-07 : 146.09458 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="210 : 146.09458 : 1"
+       inkscape:persp3d-origin="105 : 96.594575 : 1"
+       id="perspective2738" />
+    <linearGradient
+       id="linearGradient898"
+       osb:paint="solid">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop896" />
+    </linearGradient>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.70710678"
+     inkscape:cx="194.84987"
+     inkscape:cy="587.74552"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1057"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Capa 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g10498"
+       transform="translate(65.761675,-132.17814)"
+       inkscape:export-filename="C:\Users\nervi\Desktop\FASTLINE\android\assets\midBall3.png"
+       inkscape:export-xdpi="139.00453"
+       inkscape:export-ydpi="139.00453">
+      <path
+         transform="rotate(90)"
+         d="m 249.25917,-31.487495 a 36.545559,36.545559 0 0 1 -18.27278,31.64938198 36.545559,36.545559 0 0 1 -36.54556,7e-8 L 212.71361,-31.487495 Z"
+         sodipodi:end="2.0943951"
+         sodipodi:start="0"
+         sodipodi:ry="36.545559"
+         sodipodi:rx="36.545559"
+         sodipodi:cy="-31.487495"
+         sodipodi:cx="212.71361"
+         sodipodi:type="arc"
+         id="path6542-5-3"
+         style="opacity:1;vector-effect:none;fill:#00ffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.33812189;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke markers fill" />
+      <path
+         transform="matrix(0.8660254,-0.5,-0.5,-0.8660254,0,0)"
+         d="m -42.542248,-199.95912 a 36.545559,36.545559 0 0 1 -18.272779,31.64938 36.545559,36.545559 0 0 1 -36.545559,0 l 18.272779,-31.64938 z"
+         sodipodi:end="2.0943951"
+         sodipodi:start="0"
+         sodipodi:ry="36.545559"
+         sodipodi:rx="36.545559"
+         sodipodi:cy="-199.95912"
+         sodipodi:cx="-79.087807"
+         sodipodi:type="arc"
+         id="path6542-5-3-1"
+         style="opacity:1;vector-effect:none;fill:#ff0000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.33812189;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke markers fill" />
+      <path
+         transform="rotate(-30)"
+         d="m -42.542271,199.95914 a 36.545559,36.545559 0 0 1 -18.272779,31.64938 36.545559,36.545559 0 0 1 -36.545559,0 l 18.272779,-31.64938 z"
+         sodipodi:end="2.0943951"
+         sodipodi:start="0"
+         sodipodi:ry="36.545559"
+         sodipodi:rx="36.545559"
+         sodipodi:cy="199.95914"
+         sodipodi:cx="-79.08783"
+         sodipodi:type="arc"
+         id="path6542-5-3-1-4"
+         style="opacity:1;vector-effect:none;fill:#ffff00;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.33812189;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke markers fill" />
+    </g>
+    <circle
+       style="opacity:1;vector-effect:none;fill:#00ff00;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.287;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke markers fill"
+       id="path1073"
+       cx="54.574272"
+       cy="232.27434"
+       r="32.014584"
+       inkscape:export-filename="C:\Users\nervi\Desktop\FASTLINE\android\assets\greenBall.png"
+       inkscape:export-xdpi="50.776855"
+       inkscape:export-ydpi="50.776855" />
+    <g
+       id="g4643"
+       transform="matrix(1.2070161,0,0,1.2070161,-15.026143,-78.99901)"
+       inkscape:export-filename="C:\Users\nervi\Desktop\FASTLINE\android\assets\midBall4.png"
+       inkscape:export-xdpi="138.01161"
+       inkscape:export-ydpi="138.01161">
+      <a
+         id="a932">
+        <path
+           style="opacity:1;vector-effect:none;fill:#ffff00;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.287;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke markers fill"
+           id="path861"
+           sodipodi:type="arc"
+           sodipodi:cx="131.14915"
+           sodipodi:cy="217.11313"
+           sodipodi:rx="30.495451"
+           sodipodi:ry="30.495451"
+           sodipodi:start="0"
+           sodipodi:end="1.5707963"
+           d="m 161.64461,217.11313 a 30.495451,30.495451 0 0 1 -30.49545,30.49545 l -1e-5,-30.49545 z" />
+      </a>
+      <path
+         transform="scale(-1)"
+         d="m -100.6537,-217.11313 a 30.495451,30.495451 0 0 1 -30.49545,30.49545 l 0,-30.49545 z"
+         sodipodi:end="1.5707963"
+         sodipodi:start="0"
+         sodipodi:ry="30.495451"
+         sodipodi:rx="30.495451"
+         sodipodi:cy="-217.11313"
+         sodipodi:cx="-131.14915"
+         sodipodi:type="arc"
+         id="path861-1"
+         style="opacity:1;vector-effect:none;fill:#00ffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.287;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke markers fill" />
+      <path
+         transform="scale(-1,1)"
+         d="m -100.6537,217.11313 a 30.495451,30.495451 0 0 1 -30.49545,30.49545 l 0,-30.49545 z"
+         sodipodi:end="1.5707963"
+         sodipodi:start="0"
+         sodipodi:ry="30.495451"
+         sodipodi:rx="30.495451"
+         sodipodi:cy="217.11313"
+         sodipodi:cx="-131.14915"
+         sodipodi:type="arc"
+         id="path861-7"
+         style="opacity:1;vector-effect:none;fill:#00ff00;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.287;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke markers fill" />
+      <path
+         transform="scale(1,-1)"
+         d="m 161.64461,-217.11313 a 30.495451,30.495451 0 0 1 -30.49545,30.49545 l -1e-5,-30.49545 z"
+         sodipodi:end="1.5707963"
+         sodipodi:start="0"
+         sodipodi:ry="30.495451"
+         sodipodi:rx="30.495451"
+         sodipodi:cy="-217.11313"
+         sodipodi:cx="131.14915"
+         sodipodi:type="arc"
+         id="path861-4"
+         style="opacity:1;vector-effect:none;fill:#ff0000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.287;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke markers fill" />
+    </g>
+  </g>
+</svg>

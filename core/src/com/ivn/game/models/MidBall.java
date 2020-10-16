@@ -15,10 +15,14 @@ public class MidBall extends Sprite {
 
     public MidBall(Texture texture){
         super(texture);
-        super.setX(Gdx.graphics.getWidth()/2 - super.getWidth()/2);
-        super.setY(Gdx.graphics.getHeight()/2 - super.getHeight()/2);
 
-        circle = new Circle(Gdx.graphics.getWidth()/2 - 86,Gdx.graphics.getHeight()/2 - 86,171);
+        float ballWidth = Gdx.graphics.getWidth()*0.2f;
+
+        super.setSize(ballWidth,ballWidth);
+        super.setPosition(Gdx.graphics.getWidth()/2 - ballWidth/2,Gdx.graphics.getHeight()/2 - ballWidth/2);
+        super.setOriginCenter();
+
+        circle = new Circle(Gdx.graphics.getWidth()/2 ,Gdx.graphics.getHeight()/2 ,ballWidth/2);
     }
 
     public void rotateLeft(){
