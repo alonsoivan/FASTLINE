@@ -7,13 +7,14 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 
 public class Ball extends Sprite {
-    public static enum COLOR {
+    public enum COLOR {
         YELLOW,RED,BLUE,GREEN
     }
 
     public Vector2 position;
     public Vector2 direction;
     public Circle circle;
+    static public int speed = 6;
 
     public COLOR color;
 
@@ -26,7 +27,7 @@ public class Ball extends Sprite {
         super.setPosition(pos.x,pos.y);
 
         position = pos;
-        circle = new Circle(pos.x + ballWidth/2,pos.y + ballWidth/2,texture.getWidth()/2);
+        circle = new Circle(pos.x + ballWidth/2,pos.y + ballWidth/2,ballWidth/2);
 
         this.color = color;
 
@@ -39,8 +40,7 @@ public class Ball extends Sprite {
         direction = centro.sub(position);
         direction.nor();
 
-        direction.scl(7);
-
+        direction.scl(speed);
     }
 
     public void mover(){

@@ -17,8 +17,15 @@ public class ResourceManager {
     // BARRA VIDA
     public static Texture textureVida;
     public static Texture textureContainerVida;
-    public static NinePatch health;
+    public static NinePatch scoreBar;
     public static NinePatch container;
+
+
+    // MidBall
+    public static Texture midBall3;
+    public static Texture midBall4;
+    public static Texture midBall5;
+
 
 
     /**
@@ -35,8 +42,16 @@ public class ResourceManager {
         textureVida = new Texture("HUD/vida.jpg");
         textureContainerVida = new Texture("HUD/container.jpg");
 
-        health = new NinePatch(textureVida, 0, 0, 0, 0);
+        scoreBar = new NinePatch(textureVida, 0, 0, 0, 0);
         container = new NinePatch(textureContainerVida, 5, 5, 5, 5);
+
+
+        // MIDBALL
+
+        midBall3 = new Texture("midBall3.png");
+        midBall4 = new Texture("midBall4.png");
+        midBall5 = new Texture("midBall4.png");
+
     }
 
     /** Actualiza la carga de recursos */

@@ -24,7 +24,7 @@ public class SingleGameScreen implements Screen {
     SpriteBatch batch;
 
     Array<Ball> balls = new Array<>();
-    MidBall midBall = new MidBall(new Texture("midBall4.png"));
+    MidBall midBall = new MidBall();
 
     Texture amarillo;
     Texture azul;
@@ -54,7 +54,18 @@ public class SingleGameScreen implements Screen {
 
                 Texture tAle = null;
 
-                int num = MathUtils.random(midBall.level);
+                //midball.level
+                int rango = 2;
+                if(midBall.level == 2) {
+                    rango = 3; // 4 colores
+                    midBall.changeColors(4);
+                }
+                else if (midBall.level == 3) {
+                    rango = 4; // 5 colores
+                    midBall.changeColors(5);
+                }
+
+                int num = MathUtils.random(rango);
                 Ball.COLOR color = null;
 
                 if(num == 0) {
@@ -146,8 +157,9 @@ public class SingleGameScreen implements Screen {
         // Colisiones
         for(Ball ball : balls)
             if(Intersector.overlaps(midBall.circle,ball.circle)) {
+
                 if(sameColor(ball))
-                    midBall.score += 5;
+                    midBall.score += 20;
                 else
                     //System.exit(0);
                     System.out.println("perdiste wey");
@@ -164,7 +176,8 @@ public class SingleGameScreen implements Screen {
         for(int i = 0; i < 15 ; i++)
             ball.position.add(ball.direction);
 
-        int pixel = ScreenUtils.getFrameBufferPixmap(0,0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()).getPixel(MathUtils.round(ball.position.x),MathUtils.round(ball.position.y));
+        int pixel = ScreenUtils.getFrameBufferPixmap( MathUtils.round(ball.position.x ),MathUtils.round(ball.position.y ),1,1).getPixel(0,0);
+        //int pixel = 0;
         Color midBallColor = new Color(pixel);
 
         System.out.println(midBallColor.r + " " + midBallColor.b + " " + midBallColor.g);
