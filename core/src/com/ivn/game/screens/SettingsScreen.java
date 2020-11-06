@@ -1,6 +1,5 @@
 package com.ivn.game.screens;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -8,18 +7,15 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.ivn.game.MainGame;
-import com.ivn.game.managers.NetworkManager;
-import com.ivn.game.managers.ResourceManager;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.widget.VisLabel;
 import com.kotcrab.vis.ui.widget.VisTable;
 import com.kotcrab.vis.ui.widget.VisTextButton;
 
-public class MainScreen implements Screen {
+public class SettingsScreen implements Screen {
     private Stage stage;
     private MainGame game;
-
-    public MainScreen(MainGame game) {
+    public SettingsScreen(MainGame game) {
         this.game = game;
     }
 
@@ -28,16 +24,8 @@ public class MainScreen implements Screen {
     @Override
     public void show() {
 
-        ResourceManager.loadAllResources();
-
-        /*
-        if(prefs.getBoolean("sound"))
-            if (!musicaFondo.isPlaying())
-                playMusicaFondo();
-*/
-
         if (!VisUI.isLoaded())
-            VisUI.load(VisUI.SkinScale.X2);
+            VisUI.load();
 
         stage = new Stage();
 
@@ -45,44 +33,43 @@ public class MainScreen implements Screen {
         table.setFillParent(true);
         stage.addActor(table);
 
-        VisTextButton multiPlayerButton = new VisTextButton("MULTIPLAYER");
-        multiPlayerButton.addListener(new ClickListener() {
+        VisTextButton playButton = new VisTextButton("OPCIONES");
+        playButton.addListener(new ClickListener() {
 
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                new NetworkManager(game);
-                ((Game) Gdx.app.getApplicationListener()).setScreen(new LoadingMultiPlayerScreen(game));
+                game.setScreen(new MainScreen(game));
                 dispose();
             }
         });
 
-        VisTextButton singlePlayerButton = new VisTextButton("SINGLEPLAYER");
-        singlePlayerButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new SinglePlayerScreen(game));
-                dispose();
-            }
-        });
-
-        VisTextButton configButton = new VisTextButton("SETTINGS");
+        VisTextButton configButton = new VisTextButton("OPCIONES");
         configButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new SettingsScreen(game));
+                game.setScreen(new MainScreen(game));
                 dispose();
             }
         });
 
-        VisLabel aboutLabel = new VisLabel("FASTLINE libGDX\n(c) IVÁN ALONSO 2020");
+        VisTextButton quitButton = new VisTextButton("VOLVER");
+        quitButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new MainScreen(game));
+                dispose();
+            }
+        });
+
+        VisLabel aboutLabel = new VisLabel("MiJuego libGDX\n(c) IVÁN ALONSO 2020");
 
         // Añade filas a la tabla y añade los componentes
         table.row();
-        table.add(multiPlayerButton).center().width(600).height(200).pad(5);
-        table.row();
-        table.add(singlePlayerButton).center().width(600).height(150).pad(5);
+        table.add(playButton).center().width(600).height(200).pad(5);
         table.row();
         table.add(configButton).center().width(600).height(150).pad(5);
+        table.row();
+        table.add(quitButton).center().width(600).height(150).pad(5);
         table.row();
         table.add(aboutLabel).left().width(600).height(20).pad(5);
 

@@ -1,12 +1,13 @@
 package com.ivn.game.screens;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
@@ -14,12 +15,14 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.Timer;
+import com.ivn.game.managers.NetworkManager;
 import com.ivn.game.models.Ball;
 import com.ivn.game.models.MidBall;
 
-import static com.ivn.game.models.Ball.COLOR.*;
+import static com.ivn.game.models.Ball.Color.*;
+import static com.ivn.game.models.Ball.Color.GREEN;
 
-public class SingleGameScreen implements Screen {
+public class MultiPlayerScreen implements Screen {
 
     SpriteBatch batch;
 
@@ -31,6 +34,16 @@ public class SingleGameScreen implements Screen {
     Texture rojo;
     Texture green;
 
+
+    // testing
+    Array<Sprite> puntos = new Array<>();
+    Texture punto = new Texture("punto.png");
+
+    private Game game;
+    public MultiPlayerScreen(Game game) {
+        this.game = game;
+    }
+
     @Override
     public void show() {
         amarillo = new Texture("yellowBall.png");
@@ -41,6 +54,7 @@ public class SingleGameScreen implements Screen {
         batch = new SpriteBatch();
 
         generarBolas();
+
     }
 
     public void generarBolas(){
@@ -48,11 +62,15 @@ public class SingleGameScreen implements Screen {
             public void run() {
                 Vector2 pos;
                 if(MathUtils.randomBoolean())
-                    pos = new Vector2(-128,MathUtils.random(0,Gdx.graphics.getHeight()));
+                    pos = new Vector2(-128,MathUtils.random(0, Gdx.graphics.getHeight()));
                 else
                     pos = new Vector2(Gdx.graphics.getWidth(),MathUtils.random(0,Gdx.graphics.getHeight()));
 
-                Texture tAle = null;
+
+                /////
+                //pos = new Vector2(0,Gdx.graphics.getHeight()/2);
+
+
 
                 //midball.level
                 int rango = 2;
@@ -66,7 +84,8 @@ public class SingleGameScreen implements Screen {
                 }
 
                 int num = MathUtils.random(rango);
-                Ball.COLOR color = null;
+                Ball.Color color = BLUE;
+                Texture tAle = azul;
 
                 if(num == 0) {
                     tAle = amarillo;
@@ -85,6 +104,7 @@ public class SingleGameScreen implements Screen {
                     color = GREEN;
                 }
 
+                System.out.println(pos+" "+tAle+" "+color);
                 balls.add(new Ball(pos,tAle,color));
             }
         }, 1,1.5f, 300);
@@ -92,8 +112,9 @@ public class SingleGameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        update();
         draw();
+        update();
+
     }
 
     public void update(){
@@ -103,8 +124,6 @@ public class SingleGameScreen implements Screen {
         userInput();
 
         collisions();
-
-        System.out.println("PUNTUACION::::::::: "+ midBall.score);
     }
 
 
@@ -146,9 +165,13 @@ public class SingleGameScreen implements Screen {
 
         batch.begin();
 
-        midBall.draw(batch);
+        midBall.draw(batch,true);
+
         for(Ball bola : balls)
             bola.draw(batch);
+
+        for(Sprite punto : puntos)
+            punto.draw(batch);
 
         batch.end();
     }
@@ -158,12 +181,14 @@ public class SingleGameScreen implements Screen {
         for(Ball ball : balls)
             if(Intersector.overlaps(midBall.circle,ball.circle)) {
 
-                if(sameColor(ball))
-                    midBall.score += 20;
-                else
-                    //System.exit(0);
+                if(sameColor(ball)){
+                    midBall.myScore += 20;
+                    NetworkManager.client.sendTCP(20);
+                }
+                else{
                     System.out.println("perdiste wey");
-
+                    Gdx.input.vibrate(100);
+                }
 
                 balls.removeValue(ball,false);
             }
@@ -172,11 +197,26 @@ public class SingleGameScreen implements Screen {
     public boolean sameColor(Ball ball){
         // color de pixel de la pantalla
 
-        ball.position = new Vector2(ball.position.x + 64, ball.position.y + 64);
-        for(int i = 0; i < 15 ; i++)
-            ball.position.add(ball.direction);
 
-        int pixel = ScreenUtils.getFrameBufferPixmap( MathUtils.round(ball.position.x ),MathUtils.round(ball.position.y ),1,1).getPixel(0,0);
+        //testing
+        Vector2 pos = ball.position;
+        Vector2 mid = new Vector2(Gdx.graphics.getWidth()/2 , Gdx.graphics.getHeight()/2);
+        Vector2 dir = mid.sub(ball.position);
+        dir.nor();
+        dir.scl(Gdx.graphics.getWidth()*0.07f);
+        pos.add(dir);
+
+        Sprite sprite = new Sprite(punto);
+        sprite.setPosition(pos.x - punto.getWidth()/2,pos.y - punto.getWidth()/2);
+        //puntos.add(sprite);
+
+        if(puntos.size > 2)
+            puntos.removeIndex(0);
+
+
+
+
+        int pixel = ScreenUtils.getFrameBufferPixmap( MathUtils.round(pos.x ),MathUtils.round(pos.y ),1,1).getPixel(0,0);
         //int pixel = 0;
         Color midBallColor = new Color(pixel);
 
@@ -214,7 +254,6 @@ public class SingleGameScreen implements Screen {
     }
 
 
-
     @Override
     public void resize(int width, int height) {
 
@@ -232,11 +271,9 @@ public class SingleGameScreen implements Screen {
 
     @Override
     public void hide() {
-
     }
 
     @Override
     public void dispose() {
-
     }
 }

@@ -7,18 +7,18 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 
 public class Ball extends Sprite {
-    public enum COLOR {
+    public enum Color {
         YELLOW,RED,BLUE,GREEN
     }
 
     public Vector2 position;
     public Vector2 direction;
     public Circle circle;
-    static public int speed = 6;
+    static public float speed = 4f;
 
-    public COLOR color;
+    public Color color;
 
-    public Ball(Vector2 pos, Texture texture, COLOR color){
+    public Ball(Vector2 pos, Texture texture, Color color){
         super(texture);
 
         float ballWidth = Gdx.graphics.getWidth()*0.06f;
@@ -35,17 +35,17 @@ public class Ball extends Sprite {
     }
 
     public void getDirection(){
-        Vector2 centro = new Vector2(Gdx.graphics.getWidth()/2 - super.getWidth(), Gdx.graphics.getHeight()/2 - super.getHeight()/2);
+        Vector2 screenCentre = new Vector2(Gdx.graphics.getWidth()/2 , Gdx.graphics.getHeight()/2 );
 
-        direction = centro.sub(position);
+        direction = screenCentre.sub(position);
         direction.nor();
 
-        direction.scl(speed);
+        direction.scl(speed * (Gdx.graphics.getWidth()*0.001f));
     }
 
     public void mover(){
         position.add(direction);
-        super.setPosition(position.x ,position.y );
-        circle.setPosition(new Vector2(position.x  + super.getWidth()/2,position.y  + super.getHeight()/2));
+        super.setPosition(position.x - + super.getWidth()/2,position.y - super.getHeight()/2);
+        circle.setPosition(new Vector2(position.x ,position.y ));
     }
 }

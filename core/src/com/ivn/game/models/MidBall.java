@@ -11,7 +11,8 @@ import static com.ivn.game.managers.ResourceManager.*;
 public class MidBall extends Sprite {
 
     public Circle circle;
-    public int score;
+    public static int myScore;
+    public static int enemyScore;
     public int level;
 
     public MidBall(){
@@ -40,14 +41,59 @@ public class MidBall extends Sprite {
     public void draw(Batch batch) {
         super.draw(batch);
 
-        // VIDA PANTALLA
-        ResourceManager.container.draw(batch, 10, Gdx.graphics.getHeight() - 75, Gdx.graphics.getWidth() - 20 , 40);
-        ResourceManager.scoreBar.draw(batch, 5 + 10 , Gdx.graphics.getHeight() - 75 + 5, score*Gdx.graphics.getWidth()/100 -20, 30);
+    }
 
-        if(score >= 100){
-            score = 0;
-            level++;
-            Ball.speed++;
+    public void draw(Batch batch, boolean multi){
+        super.draw(batch);
+
+        float cx = Gdx.graphics.getWidth() * 0.11f;
+        float cy = Gdx.graphics.getHeight() - Gdx.graphics.getHeight() * 0.05f;
+        float cwidth = Gdx.graphics.getWidth() - cx - Gdx.graphics.getWidth() * 0.01f;
+        float cheight = Gdx.graphics.getWidth() * 0.020F;
+
+        float sx = cx + Gdx.graphics.getWidth() * 0.005f;
+        float sy = cy + Gdx.graphics.getHeight() * 0.01f;
+        float swidth = (cwidth - Gdx.graphics.getWidth() * 0.01f) / 100 ;
+        float sheight = cheight/2;
+
+        if(multi){
+            // SCOREBAR1
+            ResourceManager.container.draw(batch, cx , cy, cwidth, cheight);
+            if (myScore > 0)
+                ResourceManager.scoreBar.draw(batch, sx , sy, swidth * myScore, sheight);
+
+
+            // SCOREBAR2
+            ResourceManager.container.draw(batch, cx , cy - Gdx.graphics.getHeight() * 0.05f, cwidth, cheight);
+            if (enemyScore > 0)
+                ResourceManager.scoreBar.draw(batch, sx , sy - Gdx.graphics.getHeight() * 0.05f, swidth * enemyScore, sheight);
+
+
+
+            if (myScore >= 100 || enemyScore >= 100) {
+                myScore = 0;
+                enemyScore = 0;
+                level += 1f;
+                Ball.speed++;
+            }
+        }
+        else {
+            float cx2 = Gdx.graphics.getWidth() * 0.01f;
+            float cwidth2 = Gdx.graphics.getWidth() - cx2 - Gdx.graphics.getWidth() * 0.01f;
+
+            float sx2 = cx2 + Gdx.graphics.getWidth() * 0.005f;
+            float swidth2 = myScore * (cwidth2 - Gdx.graphics.getWidth() * 0.01f) / 100 ;
+
+            // SCOREBAR
+            ResourceManager.container.draw(batch, cx2, cy, cwidth2, cheight);
+            if (myScore > 0)
+                ResourceManager.scoreBar.draw(batch, sx2, sy, swidth2, sheight);
+
+            if (myScore >= 100) {
+                myScore = 0;
+                level += 1f;
+                Ball.speed++;
+            }
         }
     }
 
@@ -63,6 +109,5 @@ public class MidBall extends Sprite {
             setTexture(midBall5);
 
         setRotation(rotation);
-
     }
 }

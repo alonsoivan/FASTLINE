@@ -1,13 +1,14 @@
 package com.ivn.game;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.ivn.game.screens.MainScreen;
 
-public class Aplication extends Game {
+public class MainGame extends Game {
+	public Boolean isMultiReady;
 	@Override
 	public void create () {
-		((Game) Gdx.app.getApplicationListener()).setScreen(new MainScreen());
+		super.setScreen(new MainScreen(this));
+		isMultiReady = false;
 	}
 
 	@Override
