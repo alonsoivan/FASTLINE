@@ -1,19 +1,27 @@
 package com.ivn.game.models;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Circle;
+import com.ivn.game.managers.HUD;
 import com.ivn.game.managers.ResourceManager;
+import com.ivn.game.screens.MultiPlayerScreen;
+import com.ivn.game.screens.SinglePlayerScreen;
 
 import static com.ivn.game.managers.ResourceManager.*;
+import static com.ivn.game.screens.SinglePlayerScreen.State.PAUSE;
 
 public class MidBall extends Sprite {
 
     public Circle circle;
     public static int myScore;
     public static int enemyScore;
-    public int level;
+    public static int overallScore = 0;
+
+    public static int myWinRounds = 0;
+    public static int enemyWinRounds = 0;
+
+    public static int level;
 
     public MidBall(){
         super(midBall3);
@@ -37,64 +45,28 @@ public class MidBall extends Sprite {
         super.setRotation(super.getRotation() - 4);
     }
 
-    @Override
-    public void draw(Batch batch) {
-        super.draw(batch);
-
+    public static void restart(){
+        level = 1;
+        Ball.speed = 4f;
+        myScore = 0;
+        enemyScore = 0;
+        overallScore = 0;
+        myWinRounds = 0;
+        enemyWinRounds = 0;
+        MultiPlayerScreen.balls.clear();
     }
 
-    public void draw(Batch batch, boolean multi){
-        super.draw(batch);
+    public static void nextRound(){
+        MultiPlayerScreen.balls.clear();
+        myScore = 0;
+        enemyScore = 0;
+        MidBall.level += 1f;
+        Ball.speed++;
 
-        float cx = Gdx.graphics.getWidth() * 0.11f;
-        float cy = Gdx.graphics.getHeight() - Gdx.graphics.getHeight() * 0.05f;
-        float cwidth = Gdx.graphics.getWidth() - cx - Gdx.graphics.getWidth() * 0.01f;
-        float cheight = Gdx.graphics.getWidth() * 0.020F;
+        ResourceManager.timer.stop();
+        ResourceManager.countDown.restart();
 
-        float sx = cx + Gdx.graphics.getWidth() * 0.005f;
-        float sy = cy + Gdx.graphics.getHeight() * 0.01f;
-        float swidth = (cwidth - Gdx.graphics.getWidth() * 0.01f) / 100 ;
-        float sheight = cheight/2;
-
-        if(multi){
-            // SCOREBAR1
-            ResourceManager.container.draw(batch, cx , cy, cwidth, cheight);
-            if (myScore > 0)
-                ResourceManager.scoreBar.draw(batch, sx , sy, swidth * myScore, sheight);
-
-
-            // SCOREBAR2
-            ResourceManager.container.draw(batch, cx , cy - Gdx.graphics.getHeight() * 0.05f, cwidth, cheight);
-            if (enemyScore > 0)
-                ResourceManager.scoreBar.draw(batch, sx , sy - Gdx.graphics.getHeight() * 0.05f, swidth * enemyScore, sheight);
-
-
-
-            if (myScore >= 100 || enemyScore >= 100) {
-                myScore = 0;
-                enemyScore = 0;
-                level += 1f;
-                Ball.speed++;
-            }
-        }
-        else {
-            float cx2 = Gdx.graphics.getWidth() * 0.01f;
-            float cwidth2 = Gdx.graphics.getWidth() - cx2 - Gdx.graphics.getWidth() * 0.01f;
-
-            float sx2 = cx2 + Gdx.graphics.getWidth() * 0.005f;
-            float swidth2 = myScore * (cwidth2 - Gdx.graphics.getWidth() * 0.01f) / 100 ;
-
-            // SCOREBAR
-            ResourceManager.container.draw(batch, cx2, cy, cwidth2, cheight);
-            if (myScore > 0)
-                ResourceManager.scoreBar.draw(batch, sx2, sy, swidth2, sheight);
-
-            if (myScore >= 100) {
-                myScore = 0;
-                level += 1f;
-                Ball.speed++;
-            }
-        }
+        MultiPlayerScreen.state = PAUSE;
     }
 
     public void changeColors(int amount){

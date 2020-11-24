@@ -19,15 +19,15 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.Timer;
 import com.ivn.game.MainGame;
+import com.ivn.game.managers.HUD;
 import com.ivn.game.models.Ball;
 import com.ivn.game.models.MidBall;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.widget.VisTextButton;
 import com.kotcrab.vis.ui.widget.VisWindow;
 
-import java.util.TimerTask;
-
 import static com.ivn.game.models.Ball.Color.*;
+import static com.ivn.game.models.MidBall.myScore;
 import static com.ivn.game.screens.SinglePlayerScreen.State.PAUSE;
 import static com.ivn.game.screens.SinglePlayerScreen.State.PLAY;
 
@@ -54,6 +54,8 @@ public class SinglePlayerScreen implements Screen {
     Array<Sprite> puntos = new Array<>();
     Texture punto = new Texture("punto.png");
 
+
+    HUD hud;
 
     // Menús
     private Stage stage;
@@ -83,6 +85,8 @@ public class SinglePlayerScreen implements Screen {
 
         generarMenu();
 
+        hud = new HUD();
+
     }
 
     public void generarMenu(){
@@ -108,7 +112,7 @@ public class SinglePlayerScreen implements Screen {
 
 
                state = PAUSE;
-                Timer.instance().stop();
+               task.cancel();
             }
         });
         stage.addActor(pauseButton);
@@ -133,7 +137,8 @@ public class SinglePlayerScreen implements Screen {
 
 
                 state = PLAY;
-                Timer.instance().start();
+                // TODO arreglar intervalo al pausar
+                task.run();
             }
         });
 
@@ -143,10 +148,8 @@ public class SinglePlayerScreen implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 game.setScreen(new SinglePlayerScreen(game));
                 dispose();
-
-                Timer.instance().start();
-                /// TODO
-                /// restart puntuacion, nivel, speed..
+                task.run();
+                midBall.restart();
             }
         });
 
@@ -156,6 +159,8 @@ public class SinglePlayerScreen implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 game.setScreen(new SettingsScreen(game));
                 dispose();
+                task.cancel();
+                midBall.restart();
             }
         });
 
@@ -163,7 +168,8 @@ public class SinglePlayerScreen implements Screen {
         quitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Timer.instance().clear();
+                task.cancel();
+                midBall.restart();
                 game.setScreen(new MainScreen(game));
                 dispose();
             }
@@ -184,61 +190,64 @@ public class SinglePlayerScreen implements Screen {
         table.add(configButton).center().width(width).height(height).pad(pad).space(space);
         table.add(quitButton).center().width(width).height(height).pad(pad).space(space);
 
-
     }
 
-    Timer.Task task;
+    static Timer.Task task;
     public void generarBolas(){
-        task = new Timer.Task(){
-            public void run() {
-                Vector2 pos;
-                if(MathUtils.randomBoolean())
-                    pos = new Vector2(-128,MathUtils.random(0,Gdx.graphics.getHeight()));
-                else
-                    pos = new Vector2(Gdx.graphics.getWidth(),MathUtils.random(0,Gdx.graphics.getHeight()));
+            task = new Timer.Task() {
+                public void run() {
+                    Vector2 pos;
+                    if (MathUtils.randomBoolean())
+                        pos = new Vector2(-128, MathUtils.random(0, Gdx.graphics.getHeight()));
+                    else
+                        pos = new Vector2(Gdx.graphics.getWidth(), MathUtils.random(0, Gdx.graphics.getHeight()));
 
 
-                /////
-                //pos = new Vector2(0,Gdx.graphics.getHeight()/2);
+                    /////
+                    //pos = new Vector2(0,Gdx.graphics.getHeight()/2);
 
 
-                //midball.level
-                int rango = 2;
-                if(midBall.level == 2) {
-                    rango = 3; // 4 colores
-                    midBall.changeColors(4);
+                    //midball.level
+                    int rango = 2;
+                    if (midBall.level == 2) {
+                        rango = 3; // 4 colores
+                        midBall.changeColors(4);
+                    } else if (midBall.level == 3) {
+                        rango = 4; // 5 colores
+                        midBall.changeColors(5);
+                    }
+
+                    int num = MathUtils.random(rango);
+                    Ball.Color color = BLUE;
+                    Texture tAle = azul;
+
+                    if (num == 0) {
+                        tAle = amarillo;
+                        color = YELLOW;
+                    }
+                    if (num == 1) {
+                        tAle = azul;
+                        color = BLUE;
+                    }
+                    if (num == 2) {
+                        tAle = rojo;
+                        color = RED;
+                    }
+                    if (num == 3) {
+                        tAle = green;
+                        color = GREEN;
+                    }
+
+                    System.out.println("saca bola");
+                    System.out.println(pos + " " + tAle + " " + color);
+
+                    if(state == PLAY)
+                        balls.add(new Ball(pos, tAle, color));
                 }
-                else if (midBall.level == 3) {
-                    rango = 4; // 5 colores
-                    midBall.changeColors(5);
-                }
+            };
 
-                int num = MathUtils.random(rango);
-                Ball.Color color = BLUE;
-                Texture tAle = azul;
 
-                if(num == 0) {
-                    tAle = amarillo;
-                    color = YELLOW;
-                }
-                if(num == 1) {
-                    tAle = azul;
-                    color = BLUE;
-                }
-                if(num == 2) {
-                    tAle = rojo;
-                    color = RED;
-                }
-                if(num == 3){
-                    tAle = green;
-                    color = GREEN;
-                }
-
-                //System.out.println(pos+" "+tAle+" "+color);
-                balls.add(new Ball(pos,tAle,color));
-            }
-        };
-
+        System.out.println("genero bolas");
         Timer.schedule( task, 1,1.5f, 300);
     }
 
@@ -301,7 +310,9 @@ public class SinglePlayerScreen implements Screen {
 
         batch.begin();
 
-        midBall.draw(batch,false);
+        midBall.draw(batch);
+
+        hud.draw(batch, false);
 
         for(Ball bola : balls)
             bola.draw(batch);
@@ -322,11 +333,13 @@ public class SinglePlayerScreen implements Screen {
         for(Ball ball : balls)
             if(Intersector.overlaps(midBall.circle,ball.circle)) {
 
-                if(sameColor(ball))
-                    midBall.myScore += 20;
+                if(sameColor(ball)){
+                    myScore += 20;
+                    midBall.overallScore += 20;
+                }
                 else{
                     System.out.println("perdiste wey");
-                    Gdx.input.vibrate(100);
+                    //Gdx.input.vibrate(100);
                 }
 
                 balls.removeValue(ball,false);

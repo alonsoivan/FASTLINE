@@ -1,8 +1,8 @@
 package com.ivn.game.screens;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -12,40 +12,66 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.Timer;
+import com.ivn.game.MainGame;
+import com.ivn.game.managers.HUD;
 import com.ivn.game.managers.NetworkManager;
+import com.ivn.game.managers.ResourceManager;
 import com.ivn.game.models.Ball;
 import com.ivn.game.models.MidBall;
+import com.kotcrab.vis.ui.VisUI;
+import com.kotcrab.vis.ui.util.dialog.ConfirmDialogListener;
+import com.kotcrab.vis.ui.util.dialog.Dialogs;
+import com.kotcrab.vis.ui.widget.VisTextButton;
 
 import static com.ivn.game.models.Ball.Color.*;
-import static com.ivn.game.models.Ball.Color.GREEN;
+import static com.ivn.game.models.MidBall.enemyWinRounds;
+import static com.ivn.game.screens.SinglePlayerScreen.State.PAUSE;
+import static com.ivn.game.screens.SinglePlayerScreen.State.PLAY;
 
 public class MultiPlayerScreen implements Screen {
 
+    public static boolean endGame;
+    public static boolean disconected;
+
     SpriteBatch batch;
 
-    Array<Ball> balls = new Array<>();
+    public static Array<Ball> balls = new Array<>();
     MidBall midBall = new MidBall();
 
+    // TODO mover esto y hacerlo bien
     Texture amarillo;
     Texture azul;
     Texture rojo;
     Texture green;
 
-
     // testing
     Array<Sprite> puntos = new Array<>();
     Texture punto = new Texture("punto.png");
 
-    private Game game;
-    public MultiPlayerScreen(Game game) {
+    HUD hud;
+
+
+    public static SinglePlayerScreen.State state;
+
+    // Menús
+    private Stage stage;
+    private VisTextButton pauseButton;
+
+    private MainGame game;
+    public MultiPlayerScreen(MainGame game) {
         this.game = game;
     }
 
     @Override
     public void show() {
+        state = PAUSE;
+
         amarillo = new Texture("yellowBall.png");
         azul = new Texture("blueBall.png");
         rojo = new Texture("redBall.png");
@@ -55,30 +81,71 @@ public class MultiPlayerScreen implements Screen {
 
         generarBolas();
 
+        hud = new HUD();
+
+        ResourceManager.countDown.start();
+
+        generarMenu();
+    }
+    public void generarMenu(){
+        if (!VisUI.isLoaded())
+            VisUI.load(VisUI.SkinScale.X2);
+
+        float pauseWidth = Gdx.graphics.getWidth() * 0.1f;
+        float pauseHeight = Gdx.graphics.getHeight() * 0.1f;
+
+        stage = new Stage();
+
+        pauseButton = new VisTextButton("PAUSA");
+        pauseButton.setPosition(Gdx.graphics.getWidth() - Gdx.graphics.getWidth() * 0.025f - pauseWidth, Gdx.graphics.getHeight() * 0.045f );
+        pauseButton.setSize(pauseWidth,pauseHeight);
+        pauseButton.getColor().a = 0.8f;
+        pauseButton.addListener(new ChangeListener() {
+            @Override
+            public void changed (ChangeEvent event, Actor actor) {
+                final int salir = 1;
+                final int cancelar = 2;
+
+                //confirmdialog may return result of any type, here we are just using ints
+                Dialogs.showConfirmDialog(stage, "CUIDAO", "SEGURO QUIERES SALIR?",
+                        new String[]{"salir", "cancelar"}, new Integer[]{salir, cancelar},
+                        new ConfirmDialogListener<Integer>() {
+                            @Override
+                            public void result (Integer result) {
+                                if (result == salir){
+                                    midBall.restart();
+                                    game.setScreen(new VictoryOrDefeatScreen(game));
+                                }
+                                //if (result == cancelar)
+
+                            }
+                        });
+            }
+        });
+        stage.addActor(pauseButton);
     }
 
     public void generarBolas(){
-        Timer.schedule(new Timer.Task() {
+        System.out.println("genero bolas");
+        SinglePlayerScreen.task = new Timer.Task() {
             public void run() {
                 Vector2 pos;
-                if(MathUtils.randomBoolean())
-                    pos = new Vector2(-128,MathUtils.random(0, Gdx.graphics.getHeight()));
+                if (MathUtils.randomBoolean())
+                    pos = new Vector2(-128, MathUtils.random(0, Gdx.graphics.getHeight()));
                 else
-                    pos = new Vector2(Gdx.graphics.getWidth(),MathUtils.random(0,Gdx.graphics.getHeight()));
+                    pos = new Vector2(Gdx.graphics.getWidth(), MathUtils.random(0, Gdx.graphics.getHeight()));
 
 
                 /////
                 //pos = new Vector2(0,Gdx.graphics.getHeight()/2);
 
 
-
                 //midball.level
                 int rango = 2;
-                if(midBall.level == 2) {
+                if (midBall.level == 2) {
                     rango = 3; // 4 colores
                     midBall.changeColors(4);
-                }
-                else if (midBall.level == 3) {
+                } else if (midBall.level == 3) {
                     rango = 4; // 5 colores
                     midBall.changeColors(5);
                 }
@@ -87,34 +154,48 @@ public class MultiPlayerScreen implements Screen {
                 Ball.Color color = BLUE;
                 Texture tAle = azul;
 
-                if(num == 0) {
+                if (num == 0) {
                     tAle = amarillo;
                     color = YELLOW;
                 }
-                if(num == 1) {
+                if (num == 1) {
                     tAle = azul;
                     color = BLUE;
                 }
-                if(num == 2) {
+                if (num == 2) {
                     tAle = rojo;
                     color = RED;
                 }
-                if(num == 3){
+                if (num == 3) {
                     tAle = green;
                     color = GREEN;
                 }
 
-                System.out.println(pos+" "+tAle+" "+color);
-                balls.add(new Ball(pos,tAle,color));
+                System.out.println("saca bola");
+                System.out.println(pos + " " + tAle + " " + color);
+                if(state == PLAY)
+                    balls.add(new Ball(pos, tAle, color));
             }
-        }, 1,1.5f, 300);
+        };
+
+
+        System.out.println("genero bolas");
+        Timer.schedule( SinglePlayerScreen.task, 1,1.5f, 300);
     }
 
     @Override
     public void render(float delta) {
-        draw();
-        update();
+        draw(delta);
 
+        if(state == PLAY)
+            update();
+
+        //
+        if(ResourceManager.countDown.isFinished && !ResourceManager.timer.isStarted){
+            ResourceManager.timer.start();
+            state = PLAY;
+        }
+        System.out.println("ARRAY LENGTH:::" + balls.size + " " + state);
     }
 
     public void update(){
@@ -124,6 +205,43 @@ public class MultiPlayerScreen implements Screen {
         userInput();
 
         collisions();
+
+        if(endGame) {
+            game.setScreen(new VictoryOrDefeatScreen(game));
+        }else if(disconected){
+            disconected = false;
+            state = PAUSE;
+
+            Dialogs.showConfirmDialog(stage, "ERROR", "Parece que hubo algún problema con la conexión",
+                    new String[]{"ACEPTAR"}, new Integer[]{1},
+                    new ConfirmDialogListener<Integer>() {
+                        @Override
+                        public void result (Integer result) {
+                            if (result == 1){
+                                midBall.restart();
+                                game.setScreen(new VictoryOrDefeatScreen(game));
+                            }
+                        }
+                    });
+        }
+
+
+        if(ResourceManager.timer.isFinished){
+            if(midBall.myScore > midBall.enemyScore)
+                MidBall.myWinRounds++;
+            else
+                enemyWinRounds++;
+
+
+
+            if(MidBall.myWinRounds >= 3 || enemyWinRounds >= 3)
+                endGame = true;
+            else {
+                MidBall.nextRound();
+                HUD.setRounds(MidBall.myWinRounds, enemyWinRounds);
+            }
+        }
+
     }
 
 
@@ -132,7 +250,9 @@ public class MultiPlayerScreen implements Screen {
     public void userInput(){
 
         // INPUT
-        Gdx.input.setInputProcessor(new InputAdapter(){
+        InputMultiplexer inputMultiplexer = new InputMultiplexer();
+        inputMultiplexer.addProcessor(stage);
+        inputMultiplexer.addProcessor(new InputAdapter(){
             @Override
             public boolean touchUp(int screenX, int screenY, int pointer, int button) {
                 flag = false;
@@ -150,6 +270,7 @@ public class MultiPlayerScreen implements Screen {
             }
 
         });
+        Gdx.input.setInputProcessor(inputMultiplexer);
 
         if(flag)
             if(x > Gdx.graphics.getWidth()/2)
@@ -159,35 +280,45 @@ public class MultiPlayerScreen implements Screen {
 
     }
 
-    public void draw(){
+    public void draw(float dt){
+
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
 
-        midBall.draw(batch,true);
+        midBall.draw(batch);
 
-        for(Ball bola : balls)
+        hud.draw(batch, true);
+
+        for (Ball bola : balls)
             bola.draw(batch);
 
-        for(Sprite punto : puntos)
+        for (Sprite punto : puntos)
             punto.draw(batch);
 
         batch.end();
+
+
+        // Pinta la UI en la pantalla
+        stage.act(dt);
+        stage.draw();
+
     }
 
     public void collisions(){
         // Colisiones
+
         for(Ball ball : balls)
             if(Intersector.overlaps(midBall.circle,ball.circle)) {
 
                 if(sameColor(ball)){
-                    midBall.myScore += 20;
-                    NetworkManager.client.sendTCP(20);
+                    midBall.myScore += 5;
+                    NetworkManager.client.sendTCP(midBall.myScore);
                 }
                 else{
-                    System.out.println("perdiste wey");
-                    Gdx.input.vibrate(100);
+                    System.out.println("wrong color");
+                    //Gdx.input.vibrate(100);
                 }
 
                 balls.removeValue(ball,false);
@@ -210,8 +341,8 @@ public class MultiPlayerScreen implements Screen {
         sprite.setPosition(pos.x - punto.getWidth()/2,pos.y - punto.getWidth()/2);
         //puntos.add(sprite);
 
-        if(puntos.size > 2)
-            puntos.removeIndex(0);
+        //if(puntos.size > 2)
+        //   puntos.removeIndex(0);
 
 
 
@@ -267,6 +398,7 @@ public class MultiPlayerScreen implements Screen {
     @Override
     public void resume() {
 
+
     }
 
     @Override
@@ -275,5 +407,6 @@ public class MultiPlayerScreen implements Screen {
 
     @Override
     public void dispose() {
+        stage.dispose();
     }
 }

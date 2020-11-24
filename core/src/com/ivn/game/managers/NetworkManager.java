@@ -8,10 +8,13 @@ import com.ivn.game.models.MidBall;
 
 import java.io.IOException;
 
+import static com.ivn.game.screens.MultiPlayerScreen.disconected;
+import static com.ivn.game.screens.MultiPlayerScreen.endGame;
+
 public class NetworkManager extends Listener.ThreadedListener {
 
-    static public final int tcpPort = 18106;
-    static public final int udpPort = 18106;
+    static public final int tcpPort = 13913;
+    //static public final int udpPort = 18586;
     static public final String address = "2.tcp.ngrok.io";
     static public final int timeOut = 6000;
 
@@ -22,7 +25,6 @@ public class NetworkManager extends Listener.ThreadedListener {
     public NetworkManager(MainGame game){
         super(new Listener());
         this.game = game;
-
 
         try {
 
@@ -49,19 +51,42 @@ public class NetworkManager extends Listener.ThreadedListener {
 
     public void received (Connection connection, Object object) {
         if (object instanceof Integer) {
-            if((Integer) object == 20)
-                MidBall.enemyScore += 20;
+            if((Integer) object != 1)
+                MidBall.enemyScore = (Integer)object;
+        }
+
+        if(object instanceof String){
+            if(object.equals("rdy")){
+                game.isMultiReady = true;
+            }
         }
 
         if(object instanceof Boolean){
-            if((Boolean) object){
-                game.isMultiReady = true;
-            }
+            if((Boolean) object)
+                MidBall.myWinRounds++;
+            else
+                MidBall.enemyWinRounds++;
+
+            HUD.setRounds(MidBall.myWinRounds,MidBall.enemyWinRounds);
+
+
+            if(MidBall.myWinRounds >= 3 || MidBall.enemyWinRounds >= 3)
+                endGame = true;
+            else
+                MidBall.nextRound();
         }
     }
 
     public void disconnected (Connection connection) {
         System.out.println("Desconectado del servidor.");
+
+        if(!client.isConnected()) {
+            disconected = true;
+
+            System.out.println("disconected TRUE");
+        }
+
+        // TODO distinguir entre desconexión por rival o internet propio
         //System.exit(0);
     }
 

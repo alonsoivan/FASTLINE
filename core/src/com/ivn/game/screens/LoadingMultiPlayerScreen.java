@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Timer;
 import com.ivn.game.MainGame;
+import com.ivn.game.managers.NetworkManager;
 import com.ivn.game.managers.ResourceManager;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.widget.VisLabel;
@@ -39,6 +40,9 @@ public class LoadingMultiPlayerScreen implements Screen {
     public LoadingMultiPlayerScreen(MainGame game){
         this.game = game;
         // CUANDO ME DE EL OK LANZAR LA PARTIDA
+        MultiPlayerScreen.disconected = false;
+        MultiPlayerScreen.endGame = false;
+        new NetworkManager(game);
     }
 
     @Override
