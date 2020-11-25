@@ -60,11 +60,12 @@ public class HUD {
     public void draw(Batch batch, boolean multi){
         update();
 
+        /*
         // FPS
         layout.setText(fpsPantalla,"" + (int)frameRate);
         fpsPantalla.setColor(Color.WHITE);
         fpsPantalla.draw(batch, (int)frameRate + " FPS",  Gdx.graphics.getWidth() /2, 0+layout.height);
-
+        */
 
         // SCOREBARS
         float cx = Gdx.graphics.getWidth() * 0.01f;
@@ -112,7 +113,6 @@ public class HUD {
             enemyRonda1.draw(batch);
             enemyRonda2.draw(batch);
             enemyRonda3.draw(batch);
-
 
             // TIMER
             if(timer.isStarted) {

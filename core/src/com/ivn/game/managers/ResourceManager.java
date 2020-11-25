@@ -27,6 +27,10 @@ public class ResourceManager {
     public static NinePatch container;
 
 
+    // Powerups
+    public static Texture inkBall;
+    public static Sprite inkScreen;
+
     // MidBall
     public static Texture midBall3;
     public static Texture midBall4;
@@ -87,6 +91,10 @@ public class ResourceManager {
         container = new NinePatch(textureContainerScore, 5, 5, 5, 5);
 
 
+        // Powerups
+        inkBall = new Texture("ink.png");
+        inkScreen = new Sprite(new Texture("inkScreen.png"));
+
         // MIDBALL
 
         midBall3 = new Texture(Gdx.files.internal("midBall3.png"),true);
@@ -102,6 +110,7 @@ public class ResourceManager {
         textureTurnos.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
         textureTurnosW = new Texture(Gdx.files.internal("turnos_win.png"),true);
         textureTurnosW.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+
 
 
         // HUD

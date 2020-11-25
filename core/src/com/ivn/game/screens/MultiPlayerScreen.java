@@ -24,11 +24,13 @@ import com.ivn.game.managers.NetworkManager;
 import com.ivn.game.managers.ResourceManager;
 import com.ivn.game.models.Ball;
 import com.ivn.game.models.MidBall;
+import com.ivn.game.models.Util;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.util.dialog.ConfirmDialogListener;
 import com.kotcrab.vis.ui.util.dialog.Dialogs;
 import com.kotcrab.vis.ui.widget.VisTextButton;
 
+import static com.ivn.game.managers.ResourceManager.inkScreen;
 import static com.ivn.game.models.Ball.Color.*;
 import static com.ivn.game.models.MidBall.enemyWinRounds;
 import static com.ivn.game.screens.SinglePlayerScreen.State.PAUSE;
@@ -173,8 +175,9 @@ public class MultiPlayerScreen implements Screen {
 
                 System.out.println("saca bola");
                 System.out.println(pos + " " + tAle + " " + color);
-                if(state == PLAY)
-                    balls.add(new Ball(pos, tAle, color));
+                if(state == PLAY){
+                    balls.add(new Ball(pos, tAle, color,MathUtils.randomBoolean()));
+                }
             }
         };
 
@@ -231,7 +234,6 @@ public class MultiPlayerScreen implements Screen {
                 MidBall.myWinRounds++;
             else
                 enemyWinRounds++;
-
 
 
             if(MidBall.myWinRounds >= 3 || enemyWinRounds >= 3)
@@ -297,14 +299,24 @@ public class MultiPlayerScreen implements Screen {
         for (Sprite punto : puntos)
             punto.draw(batch);
 
-        batch.end();
 
+        // POWERUPS
+        if(ResourceManager.timer.isStarted){
+            inkScreen.setPosition(0,0);
+            inkScreen.setSize(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+            inkScreen.setColor(inkScreen.getColor().r,inkScreen.getColor().g,inkScreen.getColor().b,opacity);
+            inkScreen.draw(batch);
+            if(opacity > 0)
+                opacity-= 0.005f;
+        }
+        batch.end();
 
         // Pinta la UI en la pantalla
         stage.act(dt);
         stage.draw();
 
     }
+    public static float opacity = 0;
 
     public void collisions(){
         // Colisiones
@@ -315,6 +327,9 @@ public class MultiPlayerScreen implements Screen {
                 if(sameColor(ball)){
                     midBall.myScore += 5;
                     NetworkManager.client.sendTCP(midBall.myScore);
+
+                    if(ball.hasPowerUp)
+                        NetworkManager.client.sendTCP(new Util(ball.pu));
                 }
                 else{
                     System.out.println("wrong color");

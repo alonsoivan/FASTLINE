@@ -20,6 +20,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.Timer;
 import com.ivn.game.MainGame;
 import com.ivn.game.managers.HUD;
+import com.ivn.game.managers.ResourceManager;
 import com.ivn.game.models.Ball;
 import com.ivn.game.models.MidBall;
 import com.kotcrab.vis.ui.VisUI;
@@ -310,15 +311,18 @@ public class SinglePlayerScreen implements Screen {
 
         batch.begin();
 
+
         midBall.draw(batch);
 
         hud.draw(batch, false);
 
-        for(Ball bola : balls)
+        for(Ball bola : balls) {
             bola.draw(batch);
+        }
 
         for(Sprite punto : puntos)
             punto.draw(batch);
+
 
         batch.end();
 

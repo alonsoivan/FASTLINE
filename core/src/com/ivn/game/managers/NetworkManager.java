@@ -1,21 +1,22 @@
 package com.ivn.game.managers;
 
+import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.ivn.game.MainGame;
 import com.ivn.game.models.MidBall;
+import com.ivn.game.models.Util;
 
 import java.io.IOException;
 
-import static com.ivn.game.screens.MultiPlayerScreen.disconected;
-import static com.ivn.game.screens.MultiPlayerScreen.endGame;
+import static com.ivn.game.screens.MultiPlayerScreen.*;
 
 public class NetworkManager extends Listener.ThreadedListener {
 
-    static public final int tcpPort = 13913;
-    //static public final int udpPort = 18586;
-    static public final String address = "2.tcp.ngrok.io";
+    static public final int tcpPort = 16090;
+    //static public final int udpPort = 15173;
+    static public final String address = "4.tcp.ngrok.io";
     static public final int timeOut = 6000;
 
     static public Client client;
@@ -75,6 +76,14 @@ public class NetworkManager extends Listener.ThreadedListener {
             else
                 MidBall.nextRound();
         }
+
+        if(object instanceof Util){
+            if(((Util)object).pu.equals(Util.PowerUp.INK))
+
+                if(ResourceManager.timer.isStarted){
+                    opacity = 1;
+                }
+        }
     }
 
     public void disconnected (Connection connection) {
@@ -92,6 +101,9 @@ public class NetworkManager extends Listener.ThreadedListener {
 
     // This registers objects that are going to be sent or received over the network.
     public void registrar() {
-        //Kryo kryo = client.getKryo();
+        Kryo kryo = client.getKryo();
+        kryo.register(Util.class);
+        kryo.register(Util.PowerUp.class);
+        System.out.println("CLASES SERIALIZADAS---");
     }
 }
