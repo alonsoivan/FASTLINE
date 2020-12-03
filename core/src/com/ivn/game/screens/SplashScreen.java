@@ -6,10 +6,14 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.ivn.game.MainGame;
 import com.ivn.game.managers.ResourceManager;
+import com.ivn.game.models.MidBall;
+
+import static com.ivn.game.managers.ResourceManager.prefs;
 
 
 public class SplashScreen implements Screen {
@@ -21,11 +25,14 @@ public class SplashScreen implements Screen {
 
     private MainGame game;
 
+    float width = Gdx.graphics.getHeight()*0.8f;
     public SplashScreen(MainGame game) {
         this.game = game;
 
-        splashTexture = new Texture(Gdx.files.internal("midBall3.png"));
+        splashTexture = new Texture(Gdx.files.internal("balls/midBall3.png"));
         splashImage = new Image(splashTexture);
+        splashImage.setOrigin(width/2, width/2);
+
         stage = new Stage();
     }
 
@@ -44,9 +51,11 @@ public class SplashScreen implements Screen {
                     }
                 })
         ));
+        splashImage.addAction(Actions.repeat(RepeatAction.FOREVER, Actions.rotateBy(10, 0.2f)));
 
-        table.row().height(splashTexture.getHeight());
-        table.add(splashImage).center();
+
+        table.row();
+        table.add(splashImage).center().width(width).height(width);
         stage.addActor(table);
 
         // Lanza la carga de recursos
@@ -67,7 +76,14 @@ public class SplashScreen implements Screen {
             // Si la animación ha terminado se muestra ya el menú principal
             if (splashDone) {
                 System.out.println(ResourceManager.assets.getAssetNames());
-                game.setScreen(new MainScreen(game));
+
+                System.out.println(prefs.getString("name")+"BANEEEEEEE");
+                if(!prefs.getString("name").isEmpty()){
+                    game.setScreen(new MainScreen(game));
+                    MidBall.myName = prefs.getString("name");
+                }
+                else
+                    game.setScreen(new NameScreen(game));
             }
         }
     }

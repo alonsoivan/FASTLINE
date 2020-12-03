@@ -5,8 +5,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.ivn.game.MainGame;
 import com.ivn.game.managers.NetworkManager;
@@ -15,9 +17,8 @@ import com.ivn.game.models.MidBall;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.widget.VisImage;
 import com.kotcrab.vis.ui.widget.VisTable;
-import com.kotcrab.vis.ui.widget.VisTextButton;
 
-import static com.ivn.game.models.MidBall.enemyWinRounds;
+import static com.ivn.game.managers.ResourceManager.assets;
 import static com.ivn.game.models.MidBall.myWinRounds;
 
 public class VictoryOrDefeatScreen implements Screen {
@@ -52,6 +53,9 @@ public class VictoryOrDefeatScreen implements Screen {
         table.setFillParent(true);
         stage.addActor(table);
 
+        TextButton.TextButtonStyle textButtonStyle = table.getSkin().get(TextButton.TextButtonStyle.class);
+        textButtonStyle.font = assets.get("fonts/OpenSans-Semibold.ttf", BitmapFont.class);
+
         VisImage image;
         if(myWinRounds >= 3)
             image= new VisImage(new Texture("win.JPG"));
@@ -66,7 +70,7 @@ public class VictoryOrDefeatScreen implements Screen {
         if(NetworkManager.client.isConnected())
             NetworkManager.client.stop();
 
-        VisTextButton multiPlayerButton = new VisTextButton("INICIO ");
+        TextButton multiPlayerButton = new TextButton("INICIO",textButtonStyle);
         multiPlayerButton.addListener(new ClickListener() {
 
             @Override
@@ -77,7 +81,7 @@ public class VictoryOrDefeatScreen implements Screen {
             }
         });
 
-        VisTextButton singlePlayerButton = new VisTextButton("VOLVER A JUGAR");
+        TextButton singlePlayerButton = new TextButton("VOLVER A JUGAR",textButtonStyle);
         singlePlayerButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -87,20 +91,22 @@ public class VictoryOrDefeatScreen implements Screen {
             }
         });
 
+        float width = Gdx.graphics.getWidth()*0.35f;
+        float height = Gdx.graphics.getHeight()*0.25f;
 
         // Añade filas a la tabla y añade los componentes
         table.row().colspan(2);
         table.add(image).center().width(image.getWidth()).height(image.getHeight()).pad(5).space(100);
         table.row();
-        table.add(multiPlayerButton).center().width(600).height(200).pad(5);
-        table.add(singlePlayerButton).center().width(600).height(150).pad(5);
+        table.add(multiPlayerButton).center().width(width).height(height).pad(5);
+        table.add(singlePlayerButton).center().width(width).height(height).pad(5);
 
         Gdx.input.setInputProcessor(stage);
     }
 
     @Override
     public void render(float dt) {
-        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // Pinta la UI en la pantalla

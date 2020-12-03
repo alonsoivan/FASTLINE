@@ -7,28 +7,36 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.Timer;
 import com.ivn.game.MainGame;
 import com.ivn.game.managers.HUD;
-import com.ivn.game.managers.ResourceManager;
+import com.ivn.game.managers.NetworkManager;
 import com.ivn.game.models.Ball;
 import com.ivn.game.models.MidBall;
+import com.ivn.game.models.Ranking;
 import com.kotcrab.vis.ui.VisUI;
-import com.kotcrab.vis.ui.widget.VisTextButton;
 import com.kotcrab.vis.ui.widget.VisWindow;
 
+import java.util.Date;
+
+import static com.ivn.game.managers.ResourceManager.assets;
 import static com.ivn.game.models.Ball.Color.*;
-import static com.ivn.game.models.MidBall.myScore;
+import static com.ivn.game.models.MidBall.*;
 import static com.ivn.game.screens.SinglePlayerScreen.State.PAUSE;
 import static com.ivn.game.screens.SinglePlayerScreen.State.PLAY;
 
@@ -37,6 +45,8 @@ public class SinglePlayerScreen implements Screen {
     public enum State {
         PLAY,PAUSE
     }
+
+    public boolean lose;
 
     State state;
 
@@ -60,7 +70,7 @@ public class SinglePlayerScreen implements Screen {
 
     // Menús
     private Stage stage;
-    private VisTextButton pauseButton;
+    private ImageButton pauseButton;
     private VisWindow table;
 
     private MainGame game;
@@ -75,10 +85,10 @@ public class SinglePlayerScreen implements Screen {
         midBall = new MidBall();
         balls = new Array<>();
 
-        amarillo = new Texture("yellowBall.png");
-        azul = new Texture("blueBall.png");
-        rojo = new Texture("redBall.png");
-        green = new Texture("greenBall.png");
+        amarillo = new Texture("balls/yellowBall.png");
+        azul = new Texture("balls/blueBall.png");
+        rojo = new Texture("balls/redBall.png");
+        green = new Texture("balls/greenBall.png");
 
         batch = new SpriteBatch();
 
@@ -87,7 +97,6 @@ public class SinglePlayerScreen implements Screen {
         generarMenu();
 
         hud = new HUD();
-
     }
 
     public void generarMenu(){
@@ -95,28 +104,7 @@ public class SinglePlayerScreen implements Screen {
         if (!VisUI.isLoaded())
             VisUI.load(VisUI.SkinScale.X2);
 
-
-        float pauseWidth = Gdx.graphics.getWidth() * 0.1f;
-        float pauseHeight = Gdx.graphics.getHeight() * 0.1f;
-
         stage = new Stage();
-        pauseButton = new VisTextButton("PAUSA");
-        pauseButton.setPosition(Gdx.graphics.getWidth() - Gdx.graphics.getWidth() * 0.025f - pauseWidth, Gdx.graphics.getHeight() * 0.045f );
-        pauseButton.setSize(pauseWidth,pauseHeight);
-        pauseButton.getColor().a = 0.8f;
-        pauseButton.addListener(new ClickListener() {
-
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-               table.setVisible(true);
-               pauseButton.setVisible(false);
-
-
-               state = PAUSE;
-               task.cancel();
-            }
-        });
-        stage.addActor(pauseButton);
 
         table = new VisWindow("");
         table.setSize(Gdx.graphics.getWidth()* 0.45f, Gdx.graphics.getHeight()* 0.6f);
@@ -124,11 +112,35 @@ public class SinglePlayerScreen implements Screen {
         table.setResizable(true);
         table.setMovable(false);
         table.setVisible(false);
-        table.getColor().a = 0.95f;
+        table.getColor().a = 0.85f;
         stage.addActor(table);
 
+        TextButton.TextButtonStyle textButtonStyle = table.getSkin().get(TextButton.TextButtonStyle.class);
+        textButtonStyle.font = assets.get("fonts/OpenSans-Semibold.ttf", BitmapFont.class);
 
-        VisTextButton multiPlayerButton = new VisTextButton("RESUME");
+        float pauseWidth = Gdx.graphics.getWidth() * 0.07f;
+        float pauseHeight = Gdx.graphics.getWidth() * 0.07f;
+
+        pauseButton = new ImageButton(table.getSkin());
+        pauseButton.getStyle().imageUp = new TextureRegionDrawable(new TextureRegion(new Texture("HUD/pausa2.png")));
+        pauseButton.getStyle().imageDown = new TextureRegionDrawable(new TextureRegion(new Texture("HUD/pausa.png")));
+        pauseButton.setPosition(Gdx.graphics.getWidth() - Gdx.graphics.getWidth() * 0.025f - pauseWidth, Gdx.graphics.getHeight() * 0.045f );
+        pauseButton.setSize(pauseWidth,pauseHeight);
+        pauseButton.getColor().a = 0.8f;
+        pauseButton.addListener(new ClickListener() {
+
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                table.setVisible(true);
+                pauseButton.setVisible(false);
+
+                state = PAUSE;
+                task.cancel();
+            }
+        });
+        stage.addActor(pauseButton);
+
+        TextButton multiPlayerButton = new TextButton("RESUME",textButtonStyle);
         multiPlayerButton.addListener(new ClickListener() {
 
             @Override
@@ -136,14 +148,13 @@ public class SinglePlayerScreen implements Screen {
                 table.setVisible(false);
                 pauseButton.setVisible(true);
 
-
                 state = PLAY;
                 // TODO arreglar intervalo al pausar
                 task.run();
             }
         });
 
-        VisTextButton singlePlayerButton = new VisTextButton("RESTART");
+        TextButton singlePlayerButton = new TextButton("RESTART",textButtonStyle);
         singlePlayerButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -154,18 +165,18 @@ public class SinglePlayerScreen implements Screen {
             }
         });
 
-        VisTextButton configButton = new VisTextButton("SETTINGS");
+        TextButton configButton = new TextButton("SETTINGS",textButtonStyle);
         configButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new SettingsScreen(game));
+                game.setScreen(new RankingScreen(game));
                 dispose();
                 task.cancel();
                 midBall.restart();
             }
         });
 
-        VisTextButton quitButton = new VisTextButton("QUIT");
+        TextButton quitButton = new TextButton("QUIT",textButtonStyle);
         quitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -179,7 +190,7 @@ public class SinglePlayerScreen implements Screen {
 
         // Añade filas a la tabla y añade los componentes
 
-        float width = table.getWidth() * 0.35f;
+        float width = table.getWidth() * 0.40f;
         float height = table.getHeight() * 0.3f;
         float pad = table.getWidth() * 0.005f;
         float space = table.getWidth() * 0.08f;
@@ -190,7 +201,6 @@ public class SinglePlayerScreen implements Screen {
         table.row();
         table.add(configButton).center().width(width).height(height).pad(pad).space(space);
         table.add(quitButton).center().width(width).height(height).pad(pad).space(space);
-
     }
 
     static Timer.Task task;
@@ -206,7 +216,6 @@ public class SinglePlayerScreen implements Screen {
 
                     /////
                     //pos = new Vector2(0,Gdx.graphics.getHeight()/2);
-
 
                     //midball.level
                     int rango = 2;
@@ -242,11 +251,11 @@ public class SinglePlayerScreen implements Screen {
                     System.out.println("saca bola");
                     System.out.println(pos + " " + tAle + " " + color);
 
-                    if(state == PLAY)
+                    if(state == PLAY) {
                         balls.add(new Ball(pos, tAle, color));
+                    }
                 }
             };
-
 
         System.out.println("genero bolas");
         Timer.schedule( task, 1,1.5f, 300);
@@ -261,12 +270,35 @@ public class SinglePlayerScreen implements Screen {
     }
 
     public void update(){
-        for(Ball bola : balls)
+        for(Ball bola : balls) {
             bola.mover();
+        }
 
         userInput();
 
         collisions();
+
+        // lose perder
+        if(lose){
+            int score = overallScore;
+            sendScore();
+            task.cancel();
+            midBall.restart();
+            game.setScreen(new RankingScreen(game,score));
+            dispose();
+        }
+    }
+    public void sendScore(){
+        Timer.schedule(new Timer.Task() {
+            public void run() {
+                Ranking ranking = new Ranking();
+                ranking.names[0] = myName;
+                ranking.scores[0] = String.valueOf(myScore);
+                ranking.dates[0] = String.valueOf(new Date().getTime());
+
+                new NetworkManager(ranking);
+            }
+        }, 0);
     }
 
 
@@ -290,6 +322,7 @@ public class SinglePlayerScreen implements Screen {
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
                 flag = true;
                 x = screenX;
+
                 return true;
             }
 
@@ -330,6 +363,7 @@ public class SinglePlayerScreen implements Screen {
         // Pinta la UI en la pantalla
         stage.act(dt);
         stage.draw();
+
     }
 
     public void collisions(){
@@ -342,7 +376,10 @@ public class SinglePlayerScreen implements Screen {
                     midBall.overallScore += 20;
                 }
                 else{
-                    System.out.println("perdiste wey");
+                    myScore -= 10;
+                    midBall.overallScore -=10;
+                    if(myScore <= 0 && MidBall.level > 1)
+                        lose = true;
                     //Gdx.input.vibrate(100);
                 }
 

@@ -7,14 +7,21 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.Timer;
@@ -28,8 +35,10 @@ import com.ivn.game.models.Util;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.util.dialog.ConfirmDialogListener;
 import com.kotcrab.vis.ui.util.dialog.Dialogs;
+import com.kotcrab.vis.ui.widget.VisTable;
 import com.kotcrab.vis.ui.widget.VisTextButton;
 
+import static com.ivn.game.managers.ResourceManager.assets;
 import static com.ivn.game.managers.ResourceManager.inkScreen;
 import static com.ivn.game.models.Ball.Color.*;
 import static com.ivn.game.models.MidBall.enemyWinRounds;
@@ -63,7 +72,7 @@ public class MultiPlayerScreen implements Screen {
 
     // Menús
     private Stage stage;
-    private VisTextButton pauseButton;
+    private ImageButton pauseButton;
 
     private MainGame game;
     public MultiPlayerScreen(MainGame game) {
@@ -89,39 +98,44 @@ public class MultiPlayerScreen implements Screen {
 
         generarMenu();
     }
+    VisTable table;
     public void generarMenu(){
         if (!VisUI.isLoaded())
             VisUI.load(VisUI.SkinScale.X2);
-
-        float pauseWidth = Gdx.graphics.getWidth() * 0.1f;
-        float pauseHeight = Gdx.graphics.getHeight() * 0.1f;
-
         stage = new Stage();
 
-        pauseButton = new VisTextButton("PAUSA");
+        float pauseWidth = Gdx.graphics.getWidth() * 0.07f;
+        float pauseHeight = Gdx.graphics.getWidth() * 0.07f;
+
+        table = new VisTable(true);
+
+        pauseButton = new ImageButton(table.getSkin());
+        pauseButton.getStyle().imageUp = new TextureRegionDrawable(new TextureRegion(new Texture("HUD/pausa2.png")));
+        pauseButton.getStyle().imageDown = new TextureRegionDrawable(new TextureRegion(new Texture("HUD/pausa.png")));
         pauseButton.setPosition(Gdx.graphics.getWidth() - Gdx.graphics.getWidth() * 0.025f - pauseWidth, Gdx.graphics.getHeight() * 0.045f );
         pauseButton.setSize(pauseWidth,pauseHeight);
         pauseButton.getColor().a = 0.8f;
         pauseButton.addListener(new ChangeListener() {
             @Override
             public void changed (ChangeEvent event, Actor actor) {
-                final int salir = 1;
-                final int cancelar = 2;
 
-                //confirmdialog may return result of any type, here we are just using ints
-                Dialogs.showConfirmDialog(stage, "CUIDAO", "SEGURO QUIERES SALIR?",
-                        new String[]{"salir", "cancelar"}, new Integer[]{salir, cancelar},
-                        new ConfirmDialogListener<Integer>() {
-                            @Override
-                            public void result (Integer result) {
-                                if (result == salir){
-                                    midBall.restart();
-                                    game.setScreen(new VictoryOrDefeatScreen(game));
-                                }
-                                //if (result == cancelar)
+                Dialog dialog = new Dialog("", table.getSkin()) {
+                    public void result(Object obj) {
+                        if((boolean)obj == true){
+                            midBall.restart();
+                            game.setScreen(new VictoryOrDefeatScreen(game));
+                        }
+                    }
+                };
 
-                            }
-                        });
+                TextButton.TextButtonStyle textButtonStyle = table.getSkin().get(TextButton.TextButtonStyle.class);
+                textButtonStyle.font = assets.get("fonts/OpenSans-Semibold.ttf", BitmapFont.class);
+
+                dialog.text(" ¿ABANDONAR PARTIDA? ");
+                dialog.button("SALIR",true,textButtonStyle);
+                dialog.button("");
+                dialog.button("CANCELAR",false, textButtonStyle);
+                dialog.show(stage);
             }
         });
         stage.addActor(pauseButton);
@@ -137,19 +151,14 @@ public class MultiPlayerScreen implements Screen {
                 else
                     pos = new Vector2(Gdx.graphics.getWidth(), MathUtils.random(0, Gdx.graphics.getHeight()));
 
-
                 /////
                 //pos = new Vector2(0,Gdx.graphics.getHeight()/2);
-
 
                 //midball.level
                 int rango = 2;
                 if (midBall.level == 2) {
                     rango = 3; // 4 colores
                     midBall.changeColors(4);
-                } else if (midBall.level == 3) {
-                    rango = 4; // 5 colores
-                    midBall.changeColors(5);
                 }
 
                 int num = MathUtils.random(rango);
@@ -215,19 +224,20 @@ public class MultiPlayerScreen implements Screen {
             disconected = false;
             state = PAUSE;
 
-            Dialogs.showConfirmDialog(stage, "ERROR", "Parece que hubo algún problema con la conexión",
-                    new String[]{"ACEPTAR"}, new Integer[]{1},
-                    new ConfirmDialogListener<Integer>() {
-                        @Override
-                        public void result (Integer result) {
-                            if (result == 1){
-                                midBall.restart();
-                                game.setScreen(new VictoryOrDefeatScreen(game));
-                            }
-                        }
-                    });
-        }
+            TextButton.TextButtonStyle textButtonStyle = table.getSkin().get(TextButton.TextButtonStyle.class);
+            textButtonStyle.font = assets.get("fonts/OpenSans-Semibold.ttf", BitmapFont.class);
 
+            Dialog dialog = new Dialog("", table.getSkin()) {
+                public void result(Object obj) {
+                    midBall.restart();
+                    game.setScreen(new VictoryOrDefeatScreen(game));
+                }
+            };
+            dialog.text(" !Parece que hubo algún\n problema con la conexión! ");
+            dialog.button("ACEPTAR",textButtonStyle); //sends "true" as the result
+            dialog.show(stage);
+
+        }
 
         if(ResourceManager.timer.isFinished){
             if(midBall.myScore > midBall.enemyScore)
@@ -243,9 +253,7 @@ public class MultiPlayerScreen implements Screen {
                 HUD.setRounds(MidBall.myWinRounds, enemyWinRounds);
             }
         }
-
     }
-
 
     boolean flag = false;
     int x = 0;
@@ -325,7 +333,7 @@ public class MultiPlayerScreen implements Screen {
             if(Intersector.overlaps(midBall.circle,ball.circle)) {
 
                 if(sameColor(ball)){
-                    midBall.myScore += 5;
+                    midBall.myScore += 10;
                     NetworkManager.client.sendTCP(midBall.myScore);
 
                     if(ball.hasPowerUp)

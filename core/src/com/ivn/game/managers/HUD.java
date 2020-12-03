@@ -29,32 +29,24 @@ public class HUD {
         timer = new MyTimer(30);
         countDown = new MyTimer(3);
 
-
-
-        // COUNTDOWN
-        countDownFont = assets.get("fonts/OpenSans-Semibold.ttf", BitmapFont.class);
-        countDownFont.setUseIntegerPositions(false);
-        countDownFont.getColor().a = 0.4f;
-
-
         // NAMES
-        myName = assets.get("fonts/LemonMilk.otf", BitmapFont.class);
-        myName.setUseIntegerPositions(false);
+        myNameFont = assets.get("fonts/LemonMilk.otf", BitmapFont.class);
+        myNameFont.setUseIntegerPositions(false);
 
-        enemyName = assets.get("fonts/LemonMilk.otf", BitmapFont.class);
-        enemyName.setUseIntegerPositions(false);
+        enemyNameFont = assets.get("fonts/LemonMilk.otf", BitmapFont.class);
+        enemyNameFont.setUseIntegerPositions(false);
 
         // TIMER
         timerFont = assets.get("fonts/LemonMilk.otf", BitmapFont.class);
         timerFont.setUseIntegerPositions(false);
 
         // SCORE
-        score = assets.get("fonts/LemonMilk.otf", BitmapFont.class);
-        score.setUseIntegerPositions(false);
+        scoreFont = assets.get("fonts/LemonMilk.otf", BitmapFont.class);
+        scoreFont.setUseIntegerPositions(false);
 
         // FPS
-        fpsPantalla = assets.get("fonts/LemonMilk.otf", BitmapFont.class);
-        fpsPantalla.setUseIntegerPositions(false);
+        fpsFont = assets.get("fonts/LemonMilk.otf", BitmapFont.class);
+        fpsFont.setUseIntegerPositions(false);
     }
 
     public void draw(Batch batch, boolean multi){
@@ -63,8 +55,8 @@ public class HUD {
         /*
         // FPS
         layout.setText(fpsPantalla,"" + (int)frameRate);
-        fpsPantalla.setColor(Color.WHITE);
-        fpsPantalla.draw(batch, (int)frameRate + " FPS",  Gdx.graphics.getWidth() /2, 0+layout.height);
+        fpsFont.setColor(Color.WHITE);
+        fpsFont.draw(batch, (int)frameRate + " FPS",  Gdx.graphics.getWidth() /2, 0+layout.height);
         */
 
         // SCOREBARS
@@ -85,19 +77,17 @@ public class HUD {
             if (myScore > 0)
                 ResourceManager.scoreBar.draw(batch, sx , sy, swidth * myScore, sheight);
 
-
             // SCOREBAR2
             ResourceManager.container.draw(batch, cx + cwidth + Gdx.graphics.getWidth() * 0.01f, cy , cwidth, cheight);
             //if (enemyScore >= 0)
-            System.out.println(enemyScore);
                 ResourceManager.scoreBar.draw(batch, ((sx + cwidth + Gdx.graphics.getWidth() * 0.01f) + (swidth*100)) - enemyScore*swidth , sy , swidth * enemyScore, sheight);
 
             // NAMES
             timerFont.setColor(Color.WHITE);
-            layout.setText(timerFont,"JUGADOR1");
-            myName.draw(batch, "JUGADOR1", cx , cy - Gdx.graphics.getHeight() * 0.025f );
-            layout.setText(timerFont,"JUGADOR2");
-            enemyName.draw(batch, "JUGADOR2",Gdx.graphics.getWidth() -  (layout.width + Gdx.graphics.getWidth() * 0.01f), cy - Gdx.graphics.getHeight() * 0.025f );
+            layout.setText(timerFont,myName);
+            myNameFont.draw(batch, myName, cx , cy - Gdx.graphics.getHeight() * 0.025f );
+            layout.setText(timerFont,enemyName);
+            enemyNameFont.draw(batch, enemyName,Gdx.graphics.getWidth() -  (layout.width + Gdx.graphics.getWidth() * 0.01f), cy - Gdx.graphics.getHeight() * 0.025f );
 
             // RONDAS
             myRonda1.setPosition(cx , cy - Gdx.graphics.getWidth() * 0.07f);
@@ -126,10 +116,21 @@ public class HUD {
             }
 
             if(countDown.isStarted){
-                layout.setText(countDownFont,""+countDown.seg);
-                countDownFont.draw(batch, ""+countDown.seg, Gdx.graphics.getWidth() / 2 - layout.width / 2, Gdx.graphics.getHeight() / 2 + layout.height/2);
-            }
 
+                float height = Gdx.graphics.getHeight()*0.8f;
+                float width ;
+
+                if(countDown.seg == 3) {
+                    width = height * countDown3.getWidth() / countDown3.getHeight();
+                    batch.draw(countDown3, Gdx.graphics.getWidth() / 2 - width / 2, Gdx.graphics.getHeight() / 2 - height / 2, width, height);
+                }else if(countDown.seg == 2) {
+                    width = height * countDown2.getWidth() / countDown2.getHeight();
+                    batch.draw(countDown2, Gdx.graphics.getWidth() / 2 - width / 2, Gdx.graphics.getHeight() / 2 - height / 2, width, height);
+                }else{
+                    width = height * countDown1.getWidth() / countDown1.getHeight();
+                    batch.draw(countDown1,Gdx.graphics.getWidth()/2 - width/2,Gdx.graphics.getHeight()/2 - height/2, width,height);
+                }
+            }
 
         }
         else {
@@ -146,8 +147,8 @@ public class HUD {
 
 
             // SCORE
-            layout.setText(fpsPantalla,""+overallScore);
-            score.draw(batch, ""+overallScore,Gdx.graphics.getWidth() - ( layout.width + Gdx.graphics.getWidth() * 0.01f ), cy - Gdx.graphics.getWidth() * 0.02f);
+            layout.setText(fpsFont,""+overallScore);
+            scoreFont.draw(batch, ""+overallScore,Gdx.graphics.getWidth() - ( layout.width + Gdx.graphics.getWidth() * 0.01f ), cy - Gdx.graphics.getWidth() * 0.02f);
 
 
             if (myScore >= 100) {

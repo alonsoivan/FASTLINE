@@ -3,17 +3,20 @@ package com.ivn.game.models;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Circle;
-import com.ivn.game.managers.HUD;
 import com.ivn.game.managers.ResourceManager;
 import com.ivn.game.screens.MultiPlayerScreen;
-import com.ivn.game.screens.SinglePlayerScreen;
 
-import static com.ivn.game.managers.ResourceManager.*;
+import static com.ivn.game.managers.ResourceManager.midBall3;
+import static com.ivn.game.managers.ResourceManager.midBall4;
+import static com.ivn.game.screens.MultiPlayerScreen.opacity;
 import static com.ivn.game.screens.SinglePlayerScreen.State.PAUSE;
 
 public class MidBall extends Sprite {
 
     public Circle circle;
+    public static String myName = "";
+    public static String enemyName = "";
+
     public static int myScore;
     public static int enemyScore;
     public static int overallScore = 0;
@@ -38,11 +41,11 @@ public class MidBall extends Sprite {
     }
 
     public void rotateLeft(){
-        super.setRotation(super.getRotation() + 4);
+        super.setRotation(super.getRotation() + 5);
     }
 
     public void rotateRight(){
-        super.setRotation(super.getRotation() - 4);
+        super.setRotation(super.getRotation() - 5);
     }
 
     public static void restart(){
@@ -63,6 +66,8 @@ public class MidBall extends Sprite {
         MidBall.level += 1f;
         Ball.speed++;
 
+        opacity = 0;
+
         ResourceManager.timer.stop();
         ResourceManager.countDown.restart();
 
@@ -77,8 +82,7 @@ public class MidBall extends Sprite {
             setTexture(midBall3);
         else if(amount == 4)
             setTexture(midBall4);
-        else if(amount == 5)
-            setTexture(midBall5);
+
 
         setRotation(rotation);
     }

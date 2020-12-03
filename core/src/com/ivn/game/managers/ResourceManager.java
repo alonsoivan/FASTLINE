@@ -1,12 +1,12 @@
 package com.ivn.game.managers;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
@@ -19,13 +19,11 @@ import java.io.File;
 public class ResourceManager {
     public static AssetManager assets = new AssetManager();
 
-
     // BARRA VIDA
     public static Texture textureScore;
     public static Texture textureContainerScore;
     public static NinePatch scoreBar;
     public static NinePatch container;
-
 
     // Powerups
     public static Texture inkBall;
@@ -40,14 +38,12 @@ public class ResourceManager {
     public static Texture textureTurnos;
     public static Texture textureTurnosW;
 
-
     // HUD
-    public static BitmapFont score;
-    public static BitmapFont myName;
-    public static BitmapFont enemyName;
+    public static BitmapFont scoreFont;
+    public static BitmapFont myNameFont;
+    public static BitmapFont enemyNameFont;
     public static BitmapFont timerFont;
-    public static BitmapFont fpsPantalla;
-    public static BitmapFont countDownFont;
+    public static BitmapFont fpsFont;
 
     public static Sprite myRonda1;
     public static Sprite myRonda2;
@@ -59,14 +55,17 @@ public class ResourceManager {
     public static MyTimer timer;
     public static MyTimer countDown;
 
-    public static GlyphLayout layout;
+    public static Texture countDown1;
+    public static Texture countDown2;
+    public static Texture countDown3;
 
+    public static GlyphLayout layout;
 
     public static FileHandleResolver resolver = new InternalFileHandleResolver();
     public static FreetypeFontLoader.FreeTypeFontLoaderParameter parameter = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
     public static FreetypeFontLoader.FreeTypeFontLoaderParameter parameter2 = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
 
-
+    public static Preferences prefs = Gdx.app.getPreferences("fast_line");
     /**
      * Carga todos los recursos del juego
      */
@@ -80,8 +79,6 @@ public class ResourceManager {
 
         assets.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
         assets.setLoader(BitmapFont.class, ".otf", new FreetypeFontLoader(resolver));
-
-
 
         // SCOREBAR
         textureScore = new Texture("HUD/vida.jpg");
@@ -97,25 +94,22 @@ public class ResourceManager {
 
         // MIDBALL
 
-        midBall3 = new Texture(Gdx.files.internal("midBall3.png"),true);
+        midBall3 = new Texture(Gdx.files.internal("balls/midBall3.png"),true);
         midBall3.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
-        midBall4 = new Texture(Gdx.files.internal("midBall4.png"),true);
+        midBall4 = new Texture(Gdx.files.internal("balls/midBall4.png"),true);
         midBall4.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
-        midBall5 = new Texture(Gdx.files.internal("midBall5.png"),true);
+        midBall5 = new Texture(Gdx.files.internal("balls/midBall5.png"),true);
         midBall5.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
 
 
         // TURNOS
-        textureTurnos = new Texture(Gdx.files.internal("turnos.png"),true);
+        textureTurnos = new Texture(Gdx.files.internal("HUD/turnos.png"),true);
         textureTurnos.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
-        textureTurnosW = new Texture(Gdx.files.internal("turnos_win.png"),true);
+        textureTurnosW = new Texture(Gdx.files.internal("HUD/turnos_win.png"),true);
         textureTurnosW.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
 
-
-
         // HUD
-        //
-        layout = new GlyphLayout(); //dont do this every frame! Store it as member
+        layout = new GlyphLayout();
 
         FreeTypeFontGenerator.setMaxTextureSize(4096);
 
@@ -124,16 +118,22 @@ public class ResourceManager {
         parameter.fontParameters.borderWidth = (int)(Gdx.graphics.getWidth() * 0.003f);
         parameter.fontFileName = "fonts/LemonMilk.otf";
 
-        // COUNTDOWN
-
-        parameter2.fontParameters.size = (int)(Gdx.graphics.getWidth() * 0.45f);
-        parameter2.fontParameters.borderWidth = (int)(Gdx.graphics.getWidth() * 0.005f);
-        parameter2.fontParameters.color = Color.WHITE;
-        parameter2.fontFileName = "fonts/OpenSans-Semibold.ttf";
-
-        assets.load("fonts/OpenSans-Semibold.ttf", BitmapFont.class, parameter2);
         assets.load("fonts/LemonMilk.otf", BitmapFont.class, parameter);
 
+        // COUNTDOWN
+        countDown1 = new Texture("fonts/1.png");
+        countDown2 = new Texture("fonts/2.png");
+        countDown3 = new Texture("fonts/3.png");
+
+        // SKINS
+
+        parameter2.fontParameters.size = (int)(Gdx.graphics.getWidth() * 0.035f);
+        parameter2.fontParameters.color = Color.WHITE;
+        parameter2.fontFileName = "fonts/OpenSans-Semibold.ttf";
+        parameter2.fontParameters.borderWidth = 0;
+
+        assets.load("fonts/OpenSans-Semibold.ttf", BitmapFont.class, parameter2);
+        assets.load("fonts/OpenSans-Semibold.ttf", BitmapFont.class, parameter);
 
         // TURNOS
         int width = (int)(Gdx.graphics.getWidth() * 0.025f);
@@ -149,7 +149,6 @@ public class ResourceManager {
         enemyRonda2.setSize(width,width);
         enemyRonda3 = new Sprite(textureTurnos);
         enemyRonda3.setSize(width,width);
-
     }
 
     /** Actualiza la carga de recursos */

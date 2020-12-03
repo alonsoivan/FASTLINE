@@ -1,6 +1,9 @@
 package com.ivn.game.models;
 
+import box2dLight.PointLight;
+import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -21,7 +24,6 @@ public class Ball extends Sprite {
     public Color color;
     public boolean hasPowerUp;
     public Util.PowerUp pu;
-
 
     public Ball(Vector2 pos, Texture texture, Color color){
         super(texture);
@@ -71,14 +73,13 @@ public class Ball extends Sprite {
 
     public void mover(){
         position.add(direction);
-        super.setPosition(position.x - + super.getWidth()/2,position.y - super.getHeight()/2);
+        super.setPosition(position.x - super.getWidth()/2,position.y - super.getHeight()/2);
         circle.setPosition(new Vector2(position.x ,position.y ));
     }
 
     @Override
     public void draw(Batch batch) {
         super.draw(batch);
-
         if(hasPowerUp){
             float puWidth = super.getWidth()*0.65f;
 
