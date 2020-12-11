@@ -308,7 +308,7 @@ public class MultiPlayerScreen implements Screen {
             freezed = false;
         }
 
-        if(freezerTimer-2 == timer.seg)
+        if(freezerTimer-2 >= timer.seg || timer.seg >= 29)
             freezed = false;
 
     }
@@ -401,7 +401,7 @@ public class MultiPlayerScreen implements Screen {
 
                 if(sameColor(ball)){
                     if(prefs.getBoolean("sounds"))
-                        sound.play(0.2f);
+                        sound.play(0.4f);
 
                     midBall.myScore += 10;
                     NetworkManager.client.sendTCP(midBall.myScore);

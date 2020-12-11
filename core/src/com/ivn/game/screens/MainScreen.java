@@ -181,7 +181,7 @@ public class MainScreen implements Screen {
         stage.addActor(titleImage);
 
 
-        TextButton multiPlayerButton = new TextButton("2 PLAYER2",textButtonStyle);
+        TextButton multiPlayerButton = new TextButton("2 PLAYERS",textButtonStyle);
         multiPlayerButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {

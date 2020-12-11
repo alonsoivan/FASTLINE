@@ -74,7 +74,7 @@ public class VictoryOrDefeatScreen implements Screen {
         if(NetworkManager.client.isConnected())
             NetworkManager.client.stop();
 
-        TextButton multiPlayerButton = new TextButton("INICIO",textButtonStyle);
+        TextButton multiPlayerButton = new TextButton("MAIN MENU",textButtonStyle);
         multiPlayerButton.addListener(new ClickListener() {
 
             @Override
@@ -85,7 +85,7 @@ public class VictoryOrDefeatScreen implements Screen {
             }
         });
 
-        TextButton singlePlayerButton = new TextButton("VOLVER A JUGAR",textButtonStyle);
+        TextButton singlePlayerButton = new TextButton("REPLAY",textButtonStyle);
         singlePlayerButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {

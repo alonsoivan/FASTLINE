@@ -161,6 +161,7 @@ public class SinglePlayerScreen implements Screen {
                 pauseButton.setVisible(true);
 
                 state = PLAY;
+                generarBolas();
                 task.run();
             }
         });
@@ -440,7 +441,7 @@ public class SinglePlayerScreen implements Screen {
 
                 if(sameColor(ball)){
                     if(prefs.getBoolean("sounds"))
-                        sound.play(0.2f);
+                        sound.play(0.4f);
 
                     int pts = 5 * midBall.racha;
                     myScore += pts;

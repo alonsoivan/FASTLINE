@@ -17,7 +17,7 @@ import static com.ivn.game.screens.MultiPlayerScreen.*;
 
 public class NetworkManager extends Listener.ThreadedListener {
 
-    static private String url = "2.tcp.ngrok.io:10336";
+    static private String url = "2.tcp.ngrok.io:10781";
     static public final int tcpPort = Integer.parseInt(url.split(":")[1]);
     static public final String address = url.split(":")[0];
     static public final int timeOut = 6000;
@@ -100,7 +100,8 @@ public class NetworkManager extends Listener.ThreadedListener {
     public void received (Connection connection, Object object) {
         if (object instanceof Integer) {
             if((Integer) object != 1)
-                MidBall.enemyScore = (Integer)object;
+                if((Integer)object <= MidBall.enemyScore + 20)
+                    MidBall.enemyScore = (Integer)object;
         }
 
         if (object instanceof Ranking) {
