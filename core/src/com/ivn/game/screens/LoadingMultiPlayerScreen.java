@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
@@ -37,7 +38,7 @@ public class LoadingMultiPlayerScreen implements Screen {
     public void setWaitingMessage(){
         Timer.schedule(new Timer.Task() {
             public void run() {
-                waitingMessage.setText("BUSCANDO PARTIDA"+dots);
+                waitingMessage.setText("SEARCHING FOR OPPONENT"+dots);
 
                 dots += ".";
 
@@ -78,7 +79,9 @@ public class LoadingMultiPlayerScreen implements Screen {
         table.setFillParent(true);
         stage.addActor(table);
 
-        TextButton.TextButtonStyle textButtonStyle = table.getSkin().get(TextButton.TextButtonStyle.class);
+        Skin skin = new Skin(Gdx.files.internal("skins/star-soldier/skin/star-soldier-ui.json"));
+        TextButton.TextButtonStyle textButtonStyle = skin.get(TextButton.TextButtonStyle.class);
+        //TextButton.TextButtonStyle textButtonStyle = table.getSkin().get(TextButton.TextButtonStyle.class);
         textButtonStyle.font = assets.get("fonts/OpenSans-Semibold.ttf", BitmapFont.class);
 
         Label.LabelStyle labelStyle = table.getSkin().get(Label.LabelStyle.class);
@@ -94,13 +97,13 @@ public class LoadingMultiPlayerScreen implements Screen {
         loadingImage3.addAction(Actions.repeat(RepeatAction.FOREVER, Actions.rotateBy(10, 0.1f)));
         loadingImage3.setOrigin(width/2, width/2);
 
-        waitingMessage = new Label("BUSCANDO PARTIDA",labelStyle);
+        waitingMessage = new Label("SEARCHING FOR OPPONENT",labelStyle);
         waitingMessage.setAlignment(Align.center);
 
         setWaitingMessage();
 
 
-        TextButton quitButton = new TextButton("CANCELAR",textButtonStyle);
+        TextButton quitButton = new TextButton("CANCEL",textButtonStyle);
         quitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -133,8 +136,6 @@ public class LoadingMultiPlayerScreen implements Screen {
         stage.act(dt);
         stage.draw();
 
-
-        System.out.println(game.isMultiReady);
         if(game.isMultiReady){
             game.setScreen(new MultiPlayerScreen(game));
             dispose();

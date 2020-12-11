@@ -1,5 +1,6 @@
 package com.ivn.game.managers;
 
+import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
@@ -16,9 +17,9 @@ import static com.ivn.game.screens.MultiPlayerScreen.*;
 
 public class NetworkManager extends Listener.ThreadedListener {
 
-    static public final int tcpPort = 16465;
-    //static public final int udpPort = 15173;
-    static public final String address = "4.tcp.ngrok.io";
+    static private String url = "2.tcp.ngrok.io:10336";
+    static public final int tcpPort = Integer.parseInt(url.split(":")[1]);
+    static public final String address = url.split(":")[0];
     static public final int timeOut = 6000;
 
     static public Client client;
@@ -129,11 +130,16 @@ public class NetworkManager extends Listener.ThreadedListener {
         }
 
         if(object instanceof Util){
-            if(((Util)object).pu.equals(Util.PowerUp.INK))
-
-                if(ResourceManager.timer.isStarted){
+            if(((Util)object).pu.equals(Util.PowerUp.INK)) {
+                if (ResourceManager.timer.isStarted) {
                     opacity = 1;
                 }
+            }else if(((Util)object).pu.equals(Util.PowerUp.VIBRATION))
+                Gdx.input.vibrate(2000);
+            else if(((Util)object).pu.equals(Util.PowerUp.FREEZED)){
+                freezed = true;
+                freezerTimer = ResourceManager.timer.seg;
+            }
         }
     }
 
@@ -142,11 +148,7 @@ public class NetworkManager extends Listener.ThreadedListener {
 
         if(!client.isConnected()) {
             disconected = true;
-
-            System.out.println("disconected TRUE");
         }
-
-        // TODO distinguir entre desconexión por rival o internet propio
     }
 
     // This registers objects that are going to be sent or received over the network.

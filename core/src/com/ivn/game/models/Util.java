@@ -2,7 +2,7 @@ package com.ivn.game.models;
 
 public class Util {
     public enum PowerUp {
-        INK
+        INK, VIBRATION, FREEZED
     }
 
     public PowerUp pu;

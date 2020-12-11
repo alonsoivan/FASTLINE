@@ -16,9 +16,9 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -33,13 +33,9 @@ import com.ivn.game.models.Ball;
 import com.ivn.game.models.MidBall;
 import com.ivn.game.models.Util;
 import com.kotcrab.vis.ui.VisUI;
-import com.kotcrab.vis.ui.util.dialog.ConfirmDialogListener;
-import com.kotcrab.vis.ui.util.dialog.Dialogs;
 import com.kotcrab.vis.ui.widget.VisTable;
-import com.kotcrab.vis.ui.widget.VisTextButton;
 
-import static com.ivn.game.managers.ResourceManager.assets;
-import static com.ivn.game.managers.ResourceManager.inkScreen;
+import static com.ivn.game.managers.ResourceManager.*;
 import static com.ivn.game.models.Ball.Color.*;
 import static com.ivn.game.models.MidBall.enemyWinRounds;
 import static com.ivn.game.screens.SinglePlayerScreen.State.PAUSE;
@@ -55,7 +51,9 @@ public class MultiPlayerScreen implements Screen {
     public static Array<Ball> balls = new Array<>();
     MidBall midBall = new MidBall();
 
-    // TODO mover esto y hacerlo bien
+    public static boolean freezed = false;
+    public static int freezerTimer = 0;
+
     Texture amarillo;
     Texture azul;
     Texture rojo;
@@ -67,8 +65,11 @@ public class MultiPlayerScreen implements Screen {
 
     HUD hud;
 
-
     public static SinglePlayerScreen.State state;
+
+    private Array<Sprite> arrayBackground1 = new Array<>();
+    private Array<Sprite> arrayBackground2 = new Array<>();
+
 
     // Menús
     private Stage stage;
@@ -83,10 +84,10 @@ public class MultiPlayerScreen implements Screen {
     public void show() {
         state = PAUSE;
 
-        amarillo = new Texture("yellowBall.png");
-        azul = new Texture("blueBall.png");
-        rojo = new Texture("redBall.png");
-        green = new Texture("greenBall.png");
+        amarillo = new Texture("balls/yellowBall.png");
+        azul = new Texture("balls/blueBall.png");
+        rojo = new Texture("balls/redBall.png");
+        green = new Texture("balls/greenBall.png");
 
         batch = new SpriteBatch();
 
@@ -104,16 +105,18 @@ public class MultiPlayerScreen implements Screen {
             VisUI.load(VisUI.SkinScale.X2);
         stage = new Stage();
 
-        float pauseWidth = Gdx.graphics.getWidth() * 0.07f;
-        float pauseHeight = Gdx.graphics.getWidth() * 0.07f;
+
+        final Skin skin = new Skin(Gdx.files.internal("skins/star-soldier/skin/star-soldier-ui.json"));
+
+        float pauseWidth = Gdx.graphics.getHeight() * 0.15f;
 
         table = new VisTable(true);
 
-        pauseButton = new ImageButton(table.getSkin());
+        pauseButton = new ImageButton(skin);
         pauseButton.getStyle().imageUp = new TextureRegionDrawable(new TextureRegion(new Texture("HUD/pausa2.png")));
         pauseButton.getStyle().imageDown = new TextureRegionDrawable(new TextureRegion(new Texture("HUD/pausa.png")));
-        pauseButton.setPosition(Gdx.graphics.getWidth() - Gdx.graphics.getWidth() * 0.025f - pauseWidth, Gdx.graphics.getHeight() * 0.045f );
-        pauseButton.setSize(pauseWidth,pauseHeight);
+        pauseButton.setPosition(Gdx.graphics.getWidth() - Gdx.graphics.getHeight() * 0.1f - pauseWidth/2, Gdx.graphics.getHeight() * 0.1f - pauseWidth/2 );
+        pauseButton.setSize(pauseWidth,pauseWidth);
         pauseButton.getColor().a = 0.8f;
         pauseButton.addListener(new ChangeListener() {
             @Override
@@ -128,13 +131,13 @@ public class MultiPlayerScreen implements Screen {
                     }
                 };
 
-                TextButton.TextButtonStyle textButtonStyle = table.getSkin().get(TextButton.TextButtonStyle.class);
+                TextButton.TextButtonStyle textButtonStyle = skin.get(TextButton.TextButtonStyle.class);
+                //TextButton.TextButtonStyle textButtonStyle = table.getSkin().get(TextButton.TextButtonStyle.class);
                 textButtonStyle.font = assets.get("fonts/OpenSans-Semibold.ttf", BitmapFont.class);
 
                 dialog.text(" ¿ABANDONAR PARTIDA? ");
-                dialog.button("SALIR",true,textButtonStyle);
-                dialog.button("");
-                dialog.button("CANCELAR",false, textButtonStyle);
+                dialog.button(" SALIR ",true,textButtonStyle);
+                dialog.button(" CANCELAR ",false, textButtonStyle);
                 dialog.show(stage);
             }
         });
@@ -142,7 +145,6 @@ public class MultiPlayerScreen implements Screen {
     }
 
     public void generarBolas(){
-        System.out.println("genero bolas");
         SinglePlayerScreen.task = new Timer.Task() {
             public void run() {
                 Vector2 pos;
@@ -184,14 +186,15 @@ public class MultiPlayerScreen implements Screen {
 
                 System.out.println("saca bola");
                 System.out.println(pos + " " + tAle + " " + color);
-                if(state == PLAY){
-                    balls.add(new Ball(pos, tAle, color,MathUtils.randomBoolean()));
+
+                int powerUp = MathUtils.random(3);
+
+                if(state == PLAY && !freezed){
+                    balls.add(new Ball(pos, tAle, color, powerUp));
                 }
             }
         };
 
-
-        System.out.println("genero bolas");
         Timer.schedule( SinglePlayerScreen.task, 1,1.5f, 300);
     }
 
@@ -207,12 +210,58 @@ public class MultiPlayerScreen implements Screen {
             ResourceManager.timer.start();
             state = PLAY;
         }
-        System.out.println("ARRAY LENGTH:::" + balls.size + " " + state);
+    }
+
+    public void background(){
+        int width = Gdx.graphics.getWidth();
+
+        if(arrayBackground1.size < 3){
+            Sprite sprite = new Sprite(back1);
+            sprite.setSize(width,width);
+            sprite.setRegion(new TextureRegion(back1,0,0,back1.getWidth() ,back1.getHeight()));
+            sprite.setBounds(0,0,width,width);
+
+            if(arrayBackground1.size > 0)
+                sprite.setPosition(0, arrayBackground1.get(arrayBackground1.size-1).getY()+width);
+            else
+                sprite.setPosition(0,0);
+
+            arrayBackground1.add(sprite);
+        }
+
+        if(arrayBackground2.size < 3){
+            Sprite sprite = new Sprite(back2);
+            sprite.setSize(width,width);
+            sprite.setRegion(new TextureRegion(back2,0,0,back2.getWidth() ,back2.getHeight()));
+            sprite.setBounds(0,0,width,width);
+
+            if(arrayBackground2.size > 0)
+                sprite.setPosition(0, arrayBackground2.get(arrayBackground2.size-1).getY()+width);
+            else
+                sprite.setPosition(0,0);
+
+            arrayBackground2.add(sprite);
+        }
     }
 
     public void update(){
+
+        for(Sprite back : arrayBackground1)
+            if((back.getY()+back.getHeight()) < 0)
+                arrayBackground1.removeIndex(0);
+            else
+                back.setPosition(back.getX(),back.getY()-5);
+
+        for(Sprite back : arrayBackground2)
+            if((back.getY()+back.getHeight()) < 0)
+                arrayBackground2.removeIndex(0);
+            else
+                back.setPosition(back.getX(),back.getY()-3);
+
+        background();
+
         for(Ball bola : balls)
-            bola.mover();
+            bola.mover(freezed);
 
         userInput();
 
@@ -224,7 +273,9 @@ public class MultiPlayerScreen implements Screen {
             disconected = false;
             state = PAUSE;
 
-            TextButton.TextButtonStyle textButtonStyle = table.getSkin().get(TextButton.TextButtonStyle.class);
+            Skin skin = new Skin(Gdx.files.internal("skins/star-soldier/skin/star-soldier-ui.json"));
+            TextButton.TextButtonStyle textButtonStyle = skin.get(TextButton.TextButtonStyle.class);
+            //TextButton.TextButtonStyle textButtonStyle = table.getSkin().get(TextButton.TextButtonStyle.class);
             textButtonStyle.font = assets.get("fonts/OpenSans-Semibold.ttf", BitmapFont.class);
 
             Dialog dialog = new Dialog("", table.getSkin()) {
@@ -234,7 +285,8 @@ public class MultiPlayerScreen implements Screen {
                 }
             };
             dialog.text(" !Parece que hubo algún\n problema con la conexión! ");
-            dialog.button("ACEPTAR",textButtonStyle); //sends "true" as the result
+            TextButton bt = new TextButton(" ACEPTAR ",textButtonStyle);
+            dialog.button(bt);
             dialog.show(stage);
 
         }
@@ -252,7 +304,13 @@ public class MultiPlayerScreen implements Screen {
                 MidBall.nextRound();
                 HUD.setRounds(MidBall.myWinRounds, enemyWinRounds);
             }
+
+            freezed = false;
         }
+
+        if(freezerTimer-2 == timer.seg)
+            freezed = false;
+
     }
 
     boolean flag = false;
@@ -297,12 +355,21 @@ public class MultiPlayerScreen implements Screen {
 
         batch.begin();
 
+        for(Sprite back : arrayBackground1)
+            back.draw(batch);
+        for(Sprite back : arrayBackground2)
+            back.draw(batch);
+
+        batch.draw(bg,0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+
+
+
         midBall.draw(batch);
 
         hud.draw(batch, true);
 
         for (Ball bola : balls)
-            bola.draw(batch);
+            bola.draw(batch,freezed);
 
         for (Sprite punto : puntos)
             punto.draw(batch);
@@ -333,6 +400,9 @@ public class MultiPlayerScreen implements Screen {
             if(Intersector.overlaps(midBall.circle,ball.circle)) {
 
                 if(sameColor(ball)){
+                    if(prefs.getBoolean("sounds"))
+                        sound.play(0.2f);
+
                     midBall.myScore += 10;
                     NetworkManager.client.sendTCP(midBall.myScore);
 
@@ -341,7 +411,6 @@ public class MultiPlayerScreen implements Screen {
                 }
                 else{
                     System.out.println("wrong color");
-                    //Gdx.input.vibrate(100);
                 }
 
                 balls.removeValue(ball,false);

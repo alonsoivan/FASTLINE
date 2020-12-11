@@ -3,32 +3,31 @@ package com.ivn.game.screens;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
 import com.ivn.game.MainGame;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.widget.VisImage;
 import com.kotcrab.vis.ui.widget.VisTable;
-import com.kotcrab.vis.ui.widget.VisTextButton;
 
-import static com.ivn.game.managers.ResourceManager.assets;
+import static com.ivn.game.managers.ResourceManager.*;
 
 public class MainScreen implements Screen {
     private Stage stage;
@@ -128,6 +127,12 @@ public class MainScreen implements Screen {
 
     @Override
     public void show() {
+        if(prefs.getBoolean("sounds") && !music.isPlaying()){
+            music.play();
+            music.setVolume(0.2f);
+            music.setLooping(true);
+        }
+
         bola = new Texture("balls/yellowBall.png");
         bola2 = new Texture("balls/blueBall.png");
         bola3 = new Texture("balls/redBall.png");
@@ -163,9 +168,9 @@ public class MainScreen implements Screen {
         //table.setFillParent(true);
         stage.addActor(table);
 
-        Skin skin = new Skin(Gdx.files.internal("skins/cloud-form/skin/cloud-form-ui.json"));
-        //TextButton.TextButtonStyle textButtonStyle = skin.get("default", TextButton.TextButtonStyle.class);
-        TextButton.TextButtonStyle textButtonStyle = table.getSkin().get(TextButton.TextButtonStyle.class);
+        Skin skin = new Skin(Gdx.files.internal("skins/star-soldier/skin/star-soldier-ui.json"));
+        TextButton.TextButtonStyle textButtonStyle = skin.get("default", TextButton.TextButtonStyle.class);
+        //TextButton.TextButtonStyle textButtonStyle = table.getSkin().get(TextButton.TextButtonStyle.class);
         textButtonStyle.font = assets.get("fonts/OpenSans-Semibold.ttf", BitmapFont.class);
 
 
@@ -176,7 +181,7 @@ public class MainScreen implements Screen {
         stage.addActor(titleImage);
 
 
-        TextButton multiPlayerButton = new TextButton("MULTIPLAYER",textButtonStyle);
+        TextButton multiPlayerButton = new TextButton("2 PLAYER2",textButtonStyle);
         multiPlayerButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -187,7 +192,7 @@ public class MainScreen implements Screen {
         });
         multiPlayerButton.getColor().a = 0.8f;
 
-        TextButton singlePlayerButton = new TextButton("SINGLEPLAYER",textButtonStyle);
+        TextButton singlePlayerButton = new TextButton("1 PLAYER",textButtonStyle);
         singlePlayerButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -209,9 +214,41 @@ public class MainScreen implements Screen {
         });
         rankingButton.getColor().a = 0.8f;
 
-        float width = Gdx.graphics.getWidth()*0.3f;
+        float width = Gdx.graphics.getWidth()*0.40f;
         float height = Gdx.graphics.getHeight()*0.25f;
-        float pad = Gdx.graphics.getWidth()*0.007f;
+        float pad = Gdx.graphics.getHeight()*0.005f;
+
+
+        final ImageButton imageButton = new  ImageButton(skin);
+        imageButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+               prefs.putBoolean("sounds",!prefs.getBoolean("sounds"));
+               prefs.flush();
+
+               if(prefs.getBoolean("sounds") && !music.isPlaying()){
+                   music.play();
+                   music.setVolume(0.2f);
+                   imageButton.getStyle().imageUp = new TextureRegionDrawable(new TextureRegion(new Texture("HUD/volumen.png")));
+                   imageButton.getStyle().imageDown = new TextureRegionDrawable(new TextureRegion(new Texture("HUD/volumen1.png")));
+
+               }
+
+               if(!prefs.getBoolean("sounds") && music.isPlaying()) {
+                   music.stop();
+                   imageButton.getStyle().imageUp = new TextureRegionDrawable(new TextureRegion(new Texture("HUD/volumen3.png")));
+                   imageButton.getStyle().imageDown = new TextureRegionDrawable(new TextureRegion(new Texture("HUD/volumen2.png")));
+               }
+            }
+        });
+        if(!prefs.getBoolean("sounds")) {
+            imageButton.getStyle().imageUp = new TextureRegionDrawable(new TextureRegion(new Texture("HUD/volumen3.png")));
+            imageButton.getStyle().imageDown = new TextureRegionDrawable(new TextureRegion(new Texture("HUD/volumen2.png")));
+        }else {
+            imageButton.getStyle().imageUp = new TextureRegionDrawable(new TextureRegion(new Texture("HUD/volumen.png")));
+            imageButton.getStyle().imageDown = new TextureRegionDrawable(new TextureRegion(new Texture("HUD/volumen1.png")));
+        }
+        imageButton.getColor().a = 0.8f;
 
         // Añade filas a la tabla y añade los componentes
         table.row();
@@ -219,7 +256,8 @@ public class MainScreen implements Screen {
         table.row();
         table.add(singlePlayerButton).center().width(width).height(height).pad(pad);
         table.row();
-        table.add(rankingButton).center().width(width).height(height).pad(pad);
+        table.add(rankingButton).center().width(width).height(height).pad(pad,pad,0,pad);
+        table.add(imageButton).right().width(height/1.5f).height(height/1.5f).pad(pad);
 
         float posY = Gdx.graphics.getHeight()/2;
         float posX = Gdx.graphics.getWidth()/4;
@@ -235,14 +273,15 @@ public class MainScreen implements Screen {
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-
         // Step the physics world.
         world.step(1/60f,6,2);
 
-        debugRenderer.render(world,camera.combined);
+        //debugRenderer.render(world,camera.combined);
 
         // open the sprite batch buffer for drawing
         batch.begin();
+
+        batch.draw(bg,0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
 
         // iterate through each of the fruits
         for (int i = 0; i < bodies.size; i++) {

@@ -1,12 +1,17 @@
 package com.ivn.game.managers;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.badlogic.gdx.utils.Timer;
 import com.ivn.game.models.Ball;
 import com.ivn.game.models.MidBall;
+import com.ivn.game.screens.SinglePlayerScreen;
 
 import static com.ivn.game.managers.ResourceManager.*;
 import static com.ivn.game.models.MidBall.*;
@@ -47,7 +52,13 @@ public class HUD {
         // FPS
         fpsFont = assets.get("fonts/LemonMilk.otf", BitmapFont.class);
         fpsFont.setUseIntegerPositions(false);
+
+
+
+        tactilTimer = new MyTimer(6);
+        tactilTimer.start();
     }
+    MyTimer tactilTimer;
 
     public void draw(Batch batch, boolean multi){
         update();
@@ -140,6 +151,11 @@ public class HUD {
             float sx2 = cx2 + Gdx.graphics.getWidth() * 0.005f;
             float swidth2 = myScore * (cwidth2 - Gdx.graphics.getWidth() * 0.01f) / 100 ;
 
+            // BONUS
+            myNameFont.draw(batch, "BONUSx"+racha, cx , cy - Gdx.graphics.getWidth() * 0.020f );
+
+
+
             // SCOREBAR
             ResourceManager.container.draw(batch, cx2, cy, cwidth2, cheight);
             if (myScore > 0)
@@ -155,8 +171,44 @@ public class HUD {
                 myScore = 0;
                 MidBall.level += 1f;
                 Ball.speed++;
+                SinglePlayerScreen.balls.clear();
             }
         }
+
+        if(Gdx.input.isTouched())
+            tactilTimer.stop();
+
+        if(tactilTimer.isStarted){
+            float width = Gdx.graphics.getHeight()* 0.45f;
+            float width2 = Gdx.graphics.getHeight()* 0.35f;
+
+
+            Boolean flag = false;
+
+            if(tactilTimer.seg % 2 == 0)
+                flag = true;
+
+
+            if(flag) {
+                tactilIzq.setSize(width,width);
+                tactilIzq.setPosition(Gdx.graphics.getWidth() - (width / 3) * 4, width / 2);
+            }else{
+                tactilIzq.setSize(width2,width2);
+                tactilIzq.setPosition(Gdx.graphics.getWidth() - (width / 3) * 4, width / 2);
+            }
+            tactilIzq.draw(batch);
+
+
+            if(!flag) {
+                tactilDer.setSize(width,width);
+                tactilDer.setPosition(width/3,width/2);
+            }else {
+                tactilDer.setSize(width2,width2);
+                tactilDer.setPosition(width/3,width/2);
+            }
+            tactilDer.draw(batch);
+        }
+
 
     }
 

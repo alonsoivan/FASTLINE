@@ -8,6 +8,7 @@ import com.ivn.game.screens.MultiPlayerScreen;
 
 import static com.ivn.game.managers.ResourceManager.midBall3;
 import static com.ivn.game.managers.ResourceManager.midBall4;
+import static com.ivn.game.screens.MultiPlayerScreen.freezed;
 import static com.ivn.game.screens.MultiPlayerScreen.opacity;
 import static com.ivn.game.screens.SinglePlayerScreen.State.PAUSE;
 
@@ -26,6 +27,8 @@ public class MidBall extends Sprite {
 
     public static int level;
 
+    public static int racha;
+
     public MidBall(){
         super(midBall3);
 
@@ -38,6 +41,8 @@ public class MidBall extends Sprite {
         level = 1;
 
         circle = new Circle(Gdx.graphics.getWidth()/2 ,Gdx.graphics.getHeight()/2 ,ballWidth/2);
+
+        racha = 0;
     }
 
     public void rotateLeft(){
@@ -57,9 +62,15 @@ public class MidBall extends Sprite {
         myWinRounds = 0;
         enemyWinRounds = 0;
         MultiPlayerScreen.balls.clear();
+
+        racha = 1;
     }
 
     public static void nextRound(){
+        Gdx.input.cancelVibrate();
+
+        freezed = false;
+
         MultiPlayerScreen.balls.clear();
         myScore = 0;
         enemyScore = 0;
@@ -72,6 +83,8 @@ public class MidBall extends Sprite {
         ResourceManager.countDown.restart();
 
         MultiPlayerScreen.state = PAUSE;
+
+        racha /= 2;
     }
 
     public void changeColors(int amount){

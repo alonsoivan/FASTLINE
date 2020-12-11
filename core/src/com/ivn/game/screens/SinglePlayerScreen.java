@@ -17,8 +17,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -34,7 +36,7 @@ import com.kotcrab.vis.ui.widget.VisWindow;
 
 import java.util.Date;
 
-import static com.ivn.game.managers.ResourceManager.assets;
+import static com.ivn.game.managers.ResourceManager.*;
 import static com.ivn.game.models.Ball.Color.*;
 import static com.ivn.game.models.MidBall.*;
 import static com.ivn.game.screens.SinglePlayerScreen.State.PAUSE;
@@ -46,13 +48,17 @@ public class SinglePlayerScreen implements Screen {
         PLAY,PAUSE
     }
 
+    private Array<Sprite> arrayBackground1 = new Array<>();
+    private Array<Sprite> arrayBackground2 = new Array<>();
+
+
     public boolean lose;
 
     State state;
 
     SpriteBatch batch;
 
-    Array<Ball> balls;
+    public static Array<Ball> balls;
     MidBall midBall;
 
     Texture amarillo;
@@ -106,27 +112,33 @@ public class SinglePlayerScreen implements Screen {
 
         stage = new Stage();
 
+
+        Skin skin = new Skin(Gdx.files.internal("skins/star-soldier/skin/star-soldier-ui.json"));
+        TextButton.TextButtonStyle textButtonStyle = skin.get(TextButton.TextButtonStyle.class);
+        //TextButton.TextButtonStyle textButtonStyle = table.getSkin().get(TextButton.TextButtonStyle.class);
+        textButtonStyle.font = assets.get("fonts/OpenSans-Semibold.ttf", BitmapFont.class);
+
         table = new VisWindow("");
-        table.setSize(Gdx.graphics.getWidth()* 0.45f, Gdx.graphics.getHeight()* 0.6f);
-        table.setCenterOnAdd(true);
+        table.setSize(Gdx.graphics.getWidth()* 0.60f, Gdx.graphics.getHeight()* 0.6f);
+        //table.setCenterOnAdd(true);
         table.setResizable(true);
         table.setMovable(false);
         table.setVisible(false);
         table.getColor().a = 0.85f;
         stage.addActor(table);
+        table.center();
+        table.setPosition(Gdx.graphics.getWidth()/2 - table.getWidth()/2 , Gdx.graphics.getHeight()/2 - table.getHeight()/2);
 
-        TextButton.TextButtonStyle textButtonStyle = table.getSkin().get(TextButton.TextButtonStyle.class);
-        textButtonStyle.font = assets.get("fonts/OpenSans-Semibold.ttf", BitmapFont.class);
 
-        float pauseWidth = Gdx.graphics.getWidth() * 0.07f;
-        float pauseHeight = Gdx.graphics.getWidth() * 0.07f;
+        float pauseWidth = Gdx.graphics.getHeight() * 0.15f;
 
-        pauseButton = new ImageButton(table.getSkin());
+        pauseButton = new ImageButton(new Skin(Gdx.files.internal("skins/star-soldier/skin/star-soldier-ui.json")));
         pauseButton.getStyle().imageUp = new TextureRegionDrawable(new TextureRegion(new Texture("HUD/pausa2.png")));
         pauseButton.getStyle().imageDown = new TextureRegionDrawable(new TextureRegion(new Texture("HUD/pausa.png")));
-        pauseButton.setPosition(Gdx.graphics.getWidth() - Gdx.graphics.getWidth() * 0.025f - pauseWidth, Gdx.graphics.getHeight() * 0.045f );
-        pauseButton.setSize(pauseWidth,pauseHeight);
+        pauseButton.setPosition(Gdx.graphics.getWidth() - Gdx.graphics.getHeight() * 0.1f - pauseWidth/2, Gdx.graphics.getHeight() * 0.1f - pauseWidth/2 );
+        pauseButton.setSize(pauseWidth,pauseWidth);
         pauseButton.getColor().a = 0.8f;
+        pauseButton.setBackground((Drawable)null);
         pauseButton.addListener(new ClickListener() {
 
             @Override
@@ -149,7 +161,6 @@ public class SinglePlayerScreen implements Screen {
                 pauseButton.setVisible(true);
 
                 state = PLAY;
-                // TODO arreglar intervalo al pausar
                 task.run();
             }
         });
@@ -165,7 +176,7 @@ public class SinglePlayerScreen implements Screen {
             }
         });
 
-        TextButton configButton = new TextButton("SETTINGS",textButtonStyle);
+        TextButton configButton = new TextButton("RANKING",textButtonStyle);
         configButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -190,10 +201,10 @@ public class SinglePlayerScreen implements Screen {
 
         // Añade filas a la tabla y añade los componentes
 
-        float width = table.getWidth() * 0.40f;
+        float width = table.getWidth() * 0.45f;
         float height = table.getHeight() * 0.3f;
-        float pad = table.getWidth() * 0.005f;
-        float space = table.getWidth() * 0.08f;
+        float pad = table.getWidth() * 0.003f;
+        float space = table.getWidth() * 0.05f;
 
         table.row();
         table.add(multiPlayerButton).center().width(width).height(height).pad(pad).space(space);
@@ -269,10 +280,59 @@ public class SinglePlayerScreen implements Screen {
             update();
     }
 
-    public void update(){
-        for(Ball bola : balls) {
-            bola.mover();
+
+    public void background(){
+        int width = Gdx.graphics.getWidth();
+
+        if(arrayBackground1.size < 3){
+            Sprite sprite = new Sprite(back1);
+            sprite.setSize(width,width);
+            sprite.setRegion(new TextureRegion(back1,0,0,back1.getWidth() ,back1.getHeight()));
+            sprite.setBounds(0,0,width,width);
+
+            if(arrayBackground1.size > 0)
+                sprite.setPosition(0, arrayBackground1.get(arrayBackground1.size-1).getY()+width);
+            else
+                sprite.setPosition(0,0);
+
+            arrayBackground1.add(sprite);
         }
+
+        if(arrayBackground2.size < 3){
+            Sprite sprite = new Sprite(back2);
+            sprite.setSize(width,width);
+            sprite.setRegion(new TextureRegion(back2,0,0,back2.getWidth() ,back2.getHeight()));
+            sprite.setBounds(0,0,width,width);
+
+            if(arrayBackground2.size > 0)
+                sprite.setPosition(0, arrayBackground2.get(arrayBackground2.size-1).getY()+width);
+            else
+                sprite.setPosition(0,0);
+
+            arrayBackground2.add(sprite);
+        }
+    }
+
+    public void update(){
+
+        for(Sprite back : arrayBackground1)
+            if((back.getY()+back.getHeight()) < 0)
+                arrayBackground1.removeIndex(0);
+            else
+                back.setPosition(back.getX(),back.getY()-5);
+
+        for(Sprite back : arrayBackground2)
+            if((back.getY()+back.getHeight()) < 0)
+                arrayBackground2.removeIndex(0);
+            else
+                back.setPosition(back.getX(),back.getY()-3);
+
+
+        for(Ball bola : balls) {
+            bola.mover(false);
+        }
+
+        background();
 
         userInput();
 
@@ -281,19 +341,19 @@ public class SinglePlayerScreen implements Screen {
         // lose perder
         if(lose){
             int score = overallScore;
-            sendScore();
+            sendScore(score);
             task.cancel();
             midBall.restart();
             game.setScreen(new RankingScreen(game,score));
             dispose();
         }
     }
-    public void sendScore(){
+    public void sendScore(final int score){
         Timer.schedule(new Timer.Task() {
             public void run() {
                 Ranking ranking = new Ranking();
                 ranking.names[0] = myName;
-                ranking.scores[0] = String.valueOf(myScore);
+                ranking.scores[0] = String.valueOf(score);
                 ranking.dates[0] = String.valueOf(new Date().getTime());
 
                 new NetworkManager(ranking);
@@ -344,6 +404,13 @@ public class SinglePlayerScreen implements Screen {
 
         batch.begin();
 
+        for(Sprite back : arrayBackground1)
+            back.draw(batch);
+        for(Sprite back : arrayBackground2)
+            back.draw(batch);
+
+        batch.draw(bg,0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+
 
         midBall.draw(batch);
 
@@ -372,12 +439,25 @@ public class SinglePlayerScreen implements Screen {
             if(Intersector.overlaps(midBall.circle,ball.circle)) {
 
                 if(sameColor(ball)){
-                    myScore += 20;
-                    midBall.overallScore += 20;
+                    if(prefs.getBoolean("sounds"))
+                        sound.play(0.2f);
+
+                    int pts = 5 * midBall.racha;
+                    myScore += pts;
+                    midBall.overallScore += pts;
+
+                    racha ++;
                 }
                 else{
+                    racha = 1;
                     myScore -= 10;
                     midBall.overallScore -=10;
+
+                    if(midBall.overallScore <= 0)
+                        midBall.overallScore = 0;
+                    if(myScore <= 0)
+                        myScore = 0;
+
                     if(myScore <= 0 && MidBall.level > 1)
                         lose = true;
                     //Gdx.input.vibrate(100);

@@ -6,8 +6,10 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.ivn.game.MainGame;
@@ -19,11 +21,14 @@ import com.kotcrab.vis.ui.widget.VisImage;
 import com.kotcrab.vis.ui.widget.VisTable;
 
 import static com.ivn.game.managers.ResourceManager.assets;
+import static com.ivn.game.managers.ResourceManager.bg;
 import static com.ivn.game.models.MidBall.myWinRounds;
 
 public class VictoryOrDefeatScreen implements Screen {
     private Stage stage;
     private MainGame game;
+
+    private SpriteBatch batch;
 
     public VictoryOrDefeatScreen(MainGame game) {
         this.game = game;
@@ -34,15 +39,9 @@ public class VictoryOrDefeatScreen implements Screen {
     @Override
     public void show() {
 
-        // TODO CORTAR CONEXIÓN
+        batch = new SpriteBatch();
 
         ResourceManager.loadAllResources();
-
-        /*
-        if(prefs.getBoolean("sound"))
-            if (!musicaFondo.isPlaying())
-                playMusicaFondo();
-        */
 
         if (!VisUI.isLoaded())
             VisUI.load(VisUI.SkinScale.X2);
@@ -53,20 +52,25 @@ public class VictoryOrDefeatScreen implements Screen {
         table.setFillParent(true);
         stage.addActor(table);
 
-        TextButton.TextButtonStyle textButtonStyle = table.getSkin().get(TextButton.TextButtonStyle.class);
+        Skin skin = new Skin(Gdx.files.internal("skins/star-soldier/skin/star-soldier-ui.json"));
+        TextButton.TextButtonStyle textButtonStyle = skin.get(TextButton.TextButtonStyle.class);
+        //TextButton.TextButtonStyle textButtonStyle = table.getSkin().get(TextButton.TextButtonStyle.class);
         textButtonStyle.font = assets.get("fonts/OpenSans-Semibold.ttf", BitmapFont.class);
 
         VisImage image;
         if(myWinRounds >= 3)
-            image= new VisImage(new Texture("win.JPG"));
+            image= new VisImage(new Texture("win.png"));
         else
             image = new VisImage(new Texture("lose.JPG"));
+
+
+        float imageWidth = Gdx.graphics.getHeight()*0.8f;
+        float imageHeight = imageWidth * image.getHeight() / image.getWidth();
+        image.setSize(imageWidth,imageHeight);
 
         MidBall.restart();
         SinglePlayerScreen.task.cancel();
 
-
-        //  TODO poner una u otra depende de quien gane
         if(NetworkManager.client.isConnected())
             NetworkManager.client.stop();
 
@@ -91,7 +95,7 @@ public class VictoryOrDefeatScreen implements Screen {
             }
         });
 
-        float width = Gdx.graphics.getWidth()*0.35f;
+        float width = Gdx.graphics.getWidth()*0.4f;
         float height = Gdx.graphics.getHeight()*0.25f;
 
         // Añade filas a la tabla y añade los componentes
@@ -108,6 +112,11 @@ public class VictoryOrDefeatScreen implements Screen {
     public void render(float dt) {
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        batch.begin();
+        batch.draw(bg,0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+        batch.end();
+
 
         // Pinta la UI en la pantalla
         stage.act(dt);

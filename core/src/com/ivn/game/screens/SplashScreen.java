@@ -75,9 +75,6 @@ public class SplashScreen implements Screen {
         if (ResourceManager.update()) {
             // Si la animación ha terminado se muestra ya el menú principal
             if (splashDone) {
-                System.out.println(ResourceManager.assets.getAssetNames());
-
-                System.out.println(prefs.getString("name")+"BANEEEEEEE");
                 if(!prefs.getString("name").isEmpty()){
                     game.setScreen(new MainScreen(game));
                     MidBall.myName = prefs.getString("name");

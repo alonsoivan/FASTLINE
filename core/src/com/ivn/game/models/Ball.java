@@ -41,7 +41,7 @@ public class Ball extends Sprite {
         getDirection();
     }
 
-    public Ball(Vector2 pos, Texture texture, Color color, boolean hasPowerUp){
+    public Ball(Vector2 pos, Texture texture, Color color, int powerUp){
         super(texture);
         float ballWidth = Gdx.graphics.getWidth()*0.06f;
 
@@ -53,13 +53,18 @@ public class Ball extends Sprite {
 
         this.color = color;
 
-        this.hasPowerUp = hasPowerUp;
+        this.hasPowerUp = powerUp > 0 ?  true : false;
 
         getDirection();
 
 
-        if(hasPowerUp)  // TODO hacer otros powerups
+        // TODO hacer otros powerups
+        if(powerUp == 1)
             pu = Util.PowerUp.INK;
+        else if(powerUp == 2)
+            pu = Util.PowerUp.VIBRATION;
+        else if(powerUp == 3)
+            pu = Util.PowerUp.FREEZED;
     }
 
     public void getDirection(){
@@ -71,20 +76,45 @@ public class Ball extends Sprite {
         direction.scl(speed * (Gdx.graphics.getWidth()*0.001f));
     }
 
-    public void mover(){
-        position.add(direction);
-        super.setPosition(position.x - super.getWidth()/2,position.y - super.getHeight()/2);
-        circle.setPosition(new Vector2(position.x ,position.y ));
+    public void mover(boolean freezed){
+        if(!freezed){
+            position.add(direction);
+            super.setPosition(position.x - super.getWidth()/2,position.y - super.getHeight()/2);
+            circle.setPosition(new Vector2(position.x ,position.y ));
+        }
     }
 
-    @Override
-    public void draw(Batch batch) {
+    public void draw(Batch batch, boolean freezed) {
         super.draw(batch);
+
         if(hasPowerUp){
             float puWidth = super.getWidth()*0.65f;
 
             if(pu.equals(Util.PowerUp.INK))
                 batch.draw(ResourceManager.inkBall,position.x - puWidth/2,position.y - puWidth/2, puWidth, puWidth);
+            else if(pu.equals(Util.PowerUp.VIBRATION))
+                batch.draw(ResourceManager.vibrationBall,position.x - puWidth/2,position.y - puWidth/2, puWidth, puWidth);
+            else if(pu.equals(Util.PowerUp.FREEZED))
+                batch.draw(ResourceManager.freezedBall,position.x - puWidth/2,position.y - puWidth/2, puWidth, puWidth);
+
+        }
+
+        if(freezed)
+            batch.draw(ResourceManager.icedBall,position.x - super.getWidth()/2 - super.getHeight()*0.1f,position.y - super.getHeight(), super.getWidth()*1.2f, super.getHeight());
+
+    }
+
+    @Override
+    public void draw(Batch batch) {
+        super.draw(batch);
+
+        if(hasPowerUp){
+            float puWidth = super.getWidth()*0.65f;
+
+            if(pu.equals(Util.PowerUp.INK))
+                batch.draw(ResourceManager.inkBall,position.x - puWidth/2,position.y - puWidth/2, puWidth, puWidth);
+            else if(pu.equals(Util.PowerUp.VIBRATION))
+                batch.draw(ResourceManager.vibrationBall,position.x - puWidth/2,position.y - puWidth/2, puWidth, puWidth);
         }
     }
 }

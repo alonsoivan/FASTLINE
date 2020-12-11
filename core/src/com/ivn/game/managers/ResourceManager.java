@@ -19,6 +19,11 @@ import java.io.File;
 public class ResourceManager {
     public static AssetManager assets = new AssetManager();
 
+    // SOUNDS
+    public static Music music = Gdx.audio.newMusic(Gdx.files.internal("sounds/wizards.mp3"));
+    public static Sound sound = Gdx.audio.newSound(Gdx.files.internal("sounds/pop.mp3"));
+
+
     // BARRA VIDA
     public static Texture textureScore;
     public static Texture textureContainerScore;
@@ -26,7 +31,10 @@ public class ResourceManager {
     public static NinePatch container;
 
     // Powerups
+    public static Texture freezedBall;
+    public static Texture icedBall;
     public static Texture inkBall;
+    public static Texture vibrationBall;
     public static Sprite inkScreen;
 
     // MidBall
@@ -39,6 +47,8 @@ public class ResourceManager {
     public static Texture textureTurnosW;
 
     // HUD
+    public static Sprite tactilIzq;
+    public static Sprite tactilDer;
     public static BitmapFont scoreFont;
     public static BitmapFont myNameFont;
     public static BitmapFont enemyNameFont;
@@ -51,6 +61,11 @@ public class ResourceManager {
     public static Sprite enemyRonda1;
     public static Sprite enemyRonda2;
     public static Sprite enemyRonda3;
+
+    public static Texture back1;
+    public static Texture back2;
+    public static Texture bg = new Texture("HUD/bg.png");
+
 
     public static MyTimer timer;
     public static MyTimer countDown;
@@ -87,8 +102,10 @@ public class ResourceManager {
         scoreBar = new NinePatch(textureScore, 0, 0, 0, 0);
         container = new NinePatch(textureContainerScore, 5, 5, 5, 5);
 
-
         // Powerups
+        freezedBall = new Texture("freezed.png");
+        icedBall = new Texture("ice.png");
+        vibrationBall = new Texture("vibration.png");
         inkBall = new Texture("ink.png");
         inkScreen = new Sprite(new Texture("inkScreen.png"));
 
@@ -119,6 +136,14 @@ public class ResourceManager {
         parameter.fontFileName = "fonts/LemonMilk.otf";
 
         assets.load("fonts/LemonMilk.otf", BitmapFont.class, parameter);
+
+        tactilIzq = new Sprite(new Texture("HUD/tactil.png"));
+        tactilDer = new Sprite(new Texture("HUD/tactil.png"));
+        tactilDer.flip(true,false);
+
+        back1 = new Texture("HUD/back1.png");
+        back2 = new Texture("HUD/back2.png");
+
 
         // COUNTDOWN
         countDown1 = new Texture("fonts/1.png");

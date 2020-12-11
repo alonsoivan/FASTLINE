@@ -60,13 +60,13 @@ public class RankingScreen implements Screen {
         table.setFillParent(true);
         stage.addActor(table);
 
-        Skin skin = new Skin(Gdx.files.internal("skins/cloud-form/skin/cloud-form-ui.json"));
+        Skin skin = new Skin(Gdx.files.internal("skins/star-soldier/skin/star-soldier-ui.json"));
         //List.ListStyle listStyle = skin.get("default", List.ListStyle.class);
         List.ListStyle listStyle = table.getSkin().get(List.ListStyle.class);
         listStyle.font = assets.get("fonts/OpenSans-Semibold.ttf", BitmapFont.class);
 
-        //TextButton.TextButtonStyle textButtonStyle =  skin.get("default", TextButton.TextButtonStyle.class);
-        TextButton.TextButtonStyle textButtonStyle = table.getSkin().get(TextButton.TextButtonStyle.class);
+        TextButton.TextButtonStyle textButtonStyle =  skin.get("default", TextButton.TextButtonStyle.class);
+        //TextButton.TextButtonStyle textButtonStyle = table.getSkin().get(TextButton.TextButtonStyle.class);
         textButtonStyle.font = assets.get("fonts/OpenSans-Semibold.ttf", BitmapFont.class);
 
         Label.LabelStyle labelStyle = table.getSkin().get(Label.LabelStyle.class);
@@ -78,7 +78,8 @@ public class RankingScreen implements Screen {
 
         connect();
 
-        TextButton quitButton = new TextButton("VOLVER",textButtonStyle);
+        TextButton quitButton = new TextButton("BACK",textButtonStyle);
+        quitButton.getColor().a = 0.8f;
         quitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -118,14 +119,14 @@ public class RankingScreen implements Screen {
         Array<String> scores = new Array<>();
         Array<String> dates = new Array<>();
 
-        names.add("NAMES");
-        scores.add("SCORES");
-        dates.add("DATES");
+        names.add(" NAME:");
+        scores.add(" SCORE:");
+        dates.add(" DATE:");
         for(int i = 0; i < ranking.names.length ; i++)
             if(ranking.names[i] != null){
-                names.add(ranking.names[i]);
-                scores.add(ranking.scores[i]);
-                dates.add(ranking.dates[i]);
+                names.add(" "+ranking.names[i]);
+                scores.add(" "+ranking.scores[i]);
+                dates.add(" "+ranking.dates[i]);
             }
 
         list1.setItems(names);
